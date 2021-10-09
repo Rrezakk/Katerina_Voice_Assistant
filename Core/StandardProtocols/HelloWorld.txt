@@ -4,10 +4,11 @@ Pattern{
 }
 Commands{
 SayAny("Приветик","скучала по вам!","Здравствуйте, сэр");
+MakeSomething();
 }
 Context:required:none
 Context:affected:none
-}
+};
 
 Protocol:background{
 Statement:time{
@@ -16,4 +17,4 @@ Statement:time{
 Commands{
 MakeSomething();
 }
-}
+};
