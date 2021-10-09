@@ -9,4 +9,14 @@
     <ProjectReference Include="..\SRM-Lib\k3na_voice.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ThirdParty\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ThirdParty\opusenc.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

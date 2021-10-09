@@ -1,0 +1,19 @@
+﻿Protocol:standard{
+Pattern{
+<word:any:привет|здорова|хеллоу>
+}
+Commands{
+SayAny("Приветик","скучала по вам!","Здравствуйте, сэр");
+}
+Context:required:none
+Context:affected:none
+}
+
+Protocol:background{
+Statement:time{
+30m
+}
+Commands{
+MakeSomething();
+}
+}

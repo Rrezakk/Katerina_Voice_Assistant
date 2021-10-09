@@ -20,6 +20,10 @@ namespace K3NA_Remastered_2
 
             MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
+            MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
+
+
+
             Console.ReadKey();
         }
       

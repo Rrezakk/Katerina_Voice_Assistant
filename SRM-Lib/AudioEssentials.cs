@@ -239,7 +239,7 @@ Console.WriteLine($"Fragment {_fragments.Count}: {fragment.MaxAmplitude}/{Config
 
                 var psi = new ProcessStartInfo
                 {
-                    FileName = "opusenc.exe",
+                    FileName = "ThirdParty/opusenc.exe",
                     Arguments = $"--bitrate {bitrate} --quiet {path} {outPath}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
