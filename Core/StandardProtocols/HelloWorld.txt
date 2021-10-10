@@ -1,4 +1,7 @@
 ﻿Protocol:standard{
+Name{
+Hello world
+}
 Pattern{
 <word:any:привет|здорова|хеллоу>
 }
@@ -11,8 +14,11 @@ Context:affected:none
 };
 
 Protocol:background{
+Name{
+30s to Mars
+}
 Statement:time{
-30m
+30s to mars<>[]();:_-
 }
 Commands{
 MakeSomething();

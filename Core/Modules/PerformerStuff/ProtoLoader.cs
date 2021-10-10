@@ -6,12 +6,9 @@ using System.Text;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff
 {
-    public class ProtoLoader
+    public static class ProtoLoader
     {
-        public static class Config
-        {
-            public const string ProtocolsPath = "StandardProtocols\\";
-        }
+        private static class Config{public const string ProtocolsPath = "StandardProtocols\\"; }
         private static IEnumerable<string> GetProtocolLines(string path)
         {
             var lines = File.ReadAllLines(path);
@@ -89,7 +86,6 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
             }
             return result;
         }
-
         private static string GetProtocolBlock(string protocol, string qualifier,string ends)
         {
             var i = protocol.IndexOf(qualifier, StringComparison.InvariantCulture);
@@ -101,17 +97,39 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
             var j = protocol.IndexOf(ends, i, StringComparison.InvariantCulture);
             return protocol.Substring(i, j - i);
         }
-        private static string GetProtocolBlock(string protocol, string qualifier, string ends,out string parameter)
+        private static string GetProtocolBlock(string protocol, string qualifier,string ends,out string parameter)
         {
-            parameter = "";
+            var qualifier2 = qualifier.Substring(0, qualifier.Length - 1)+"{";
             var i = protocol.IndexOf(qualifier, StringComparison.InvariantCulture);
+            var j = 0;
             if (i == -1)
             {
-                return "none";
+                parameter = "none";
             }
-            i += qualifier.Length;
-            var j = protocol.IndexOf(ends, i, StringComparison.InvariantCulture);
-            return protocol.Substring(i, j - i);
+            else
+            {
+                i += qualifier.Length;
+                j = protocol.IndexOf("{", i, StringComparison.InvariantCulture);
+                parameter = protocol[i..j];
+            }
+            //i,j - indexes of parameter
+            if (parameter == "none")
+            {
+                var k = protocol.IndexOf(qualifier2/*"Statement{"*/, StringComparison.InvariantCulture);
+                if (k == -1)
+                {
+                    return "none";
+                }
+                k += /*"Statement{"*/qualifier2.Length;
+                var m = protocol.IndexOf(/*"}"*/ends, k, StringComparison.InvariantCulture);
+                return k >= m ? "none" : protocol[k..m];
+            }
+            else
+            {
+                var k = protocol.IndexOf("{",j, StringComparison.InvariantCulture)+"{".Length;
+                var m = protocol.IndexOf(/*"}"*/ends, k, StringComparison.InvariantCulture);
+                return protocol[k..m];
+            }
         }
         //private static string GetProtocolType(string protocol)
         //{
@@ -135,7 +153,6 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
         //{
 
         //}
-
         public static void LoadProtocols(string folder= Config.ProtocolsPath)
         {
             Console.WriteLine("Loading protocols");
@@ -146,6 +163,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
             var splittedProtocols = SplitProtocols(lines);
             Console.Write($"Protocols founded total: ");
             splittedProtocols.ForEach(Console.WriteLine);
+            var parsedProtocols = new List<ParsedProtocol>();
             Console.WriteLine($"-------------------Parsing---------------------");
             for (var i = 0; i < splittedProtocols.Count; i++)
             {
@@ -154,12 +172,33 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
                 var type = GetProtocolBlock(protocol, "Protocol:", "{");
                 var pattern = GetProtocolBlock(protocol, "Pattern{", "}");
                 var commands = GetProtocolBlock(protocol, "Commands{", "}");
+                var statement = GetProtocolBlock(protocol,"Statement:","}", out var statementType);
+                var name = GetProtocolBlock(protocol, "Name{", "}");
+
+                Console.WriteLine($"Protocol name: {name}");
                 Console.WriteLine($"Protocol type: {type}");
                 Console.WriteLine($"Protocol pattern: {pattern}");
                 Console.WriteLine($"Protocol commands: {commands}");
+                Console.WriteLine($"Protocol statement: {statement} Type: {statementType}");
                 Console.WriteLine("-----------------------------");
-                //task: let GetProtocolBlock with out params works
+                ParsedProtocol parsedProtocol = new ParsedProtocol(name,type,commands,pattern,statement,statementType);
+                parsedProtocols.Add(parsedProtocol);
             }
+            var standardProtocols = new List<StandardProtocol>();
+            var backgroundProtocols = new List<BackgroundProtocol>();
+            foreach (var protocol in parsedProtocols)
+            {
+                switch (protocol.Type)
+                {
+                    case "standard":
+                        standardProtocols.Add(new StandardProtocol(protocol));
+                        break;
+                    case "background":
+                        backgroundProtocols.Add(new BackgroundProtocol(protocol));
+                        break;
+                }
+            }
+            //now have standardProtocols and backgroundProtocols -> let's work with it!
         }
 
     }
