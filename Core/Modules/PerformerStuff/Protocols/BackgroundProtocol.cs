@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff
+namespace K3NA_Remastered_2.Modules.PerformerStuff.Protocols
 {
-    class BackgroundProtocol
+    public class BackgroundProtocol
     {
         public string Name;
         public string Pattern;//just for now, later will be objects

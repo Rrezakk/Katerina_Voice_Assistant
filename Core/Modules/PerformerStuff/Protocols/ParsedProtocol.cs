@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff
+namespace K3NA_Remastered_2.Modules.PerformerStuff.Protocols
 {
-    class ParsedProtocol
+    public class ParsedProtocol
     {
         public string Name;
         public string Type;

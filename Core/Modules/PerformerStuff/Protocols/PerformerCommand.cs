@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff
+namespace K3NA_Remastered_2.Modules.PerformerStuff.Protocols
 {
     public abstract class PerformerCommand
     {

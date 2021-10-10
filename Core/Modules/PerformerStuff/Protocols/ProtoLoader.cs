@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using K3NA_Remastered_2.Modules.PerformerStuff.Protocols;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff
+namespace K3NA_Remastered_2.Modules.PerformerStuff.Protocols
 {
     public static class ProtoLoader
     {
@@ -153,7 +154,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
         //{
 
         //}
-        public static void LoadProtocols(string folder= Config.ProtocolsPath)
+        public static List<ParsedProtocol> LoadProtocols(string folder = Config.ProtocolsPath)
         {
             Console.WriteLine("Loading protocols");
             var protocols = GetProtocolsPaths(folder);
@@ -172,7 +173,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
                 var type = GetProtocolBlock(protocol, "Protocol:", "{");
                 var pattern = GetProtocolBlock(protocol, "Pattern{", "}");
                 var commands = GetProtocolBlock(protocol, "Commands{", "}");
-                var statement = GetProtocolBlock(protocol,"Statement:","}", out var statementType);
+                var statement = GetProtocolBlock(protocol, "Statement:", "}", out var statementType);
                 var name = GetProtocolBlock(protocol, "Name{", "}");
 
                 Console.WriteLine($"Protocol name: {name}");
@@ -181,25 +182,36 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff
                 Console.WriteLine($"Protocol commands: {commands}");
                 Console.WriteLine($"Protocol statement: {statement} Type: {statementType}");
                 Console.WriteLine("-----------------------------");
-                ParsedProtocol parsedProtocol = new ParsedProtocol(name,type,commands,pattern,statement,statementType);
+                ParsedProtocol parsedProtocol =
+                    new ParsedProtocol(name, type, commands, pattern, statement, statementType);
                 parsedProtocols.Add(parsedProtocol);
             }
-            var standardProtocols = new List<StandardProtocol>();
-            var backgroundProtocols = new List<BackgroundProtocol>();
+
+            return parsedProtocols;
+        }
+
+        public  static List<object> QualifyProtocols(List<ParsedProtocol> parsedProtocols)
+        {
+            var allProtocols = new List<object>();
             foreach (var protocol in parsedProtocols)
             {
                 switch (protocol.Type)
                 {
                     case "standard":
-                        standardProtocols.Add(new StandardProtocol(protocol));
+                        allProtocols.Add(new StandardProtocol(protocol));
                         break;
                     case "background":
-                        backgroundProtocols.Add(new BackgroundProtocol(protocol));
+                        allProtocols.Add(new BackgroundProtocol(protocol));
                         break;
                 }
             }
-            //now have standardProtocols and backgroundProtocols -> let's work with it!
+            return allProtocols;
         }
 
+        public static List<StandardProtocol> GetStandardProtocols(IEnumerable<object> protocols)
+        {
+            var standardProtocolType = new StandardProtocol().GetType();
+            return protocols.Where(protocol => protocol.GetType() == standardProtocolType).Cast<StandardProtocol>().ToList();
+        }
     }
 }

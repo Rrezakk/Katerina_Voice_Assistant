@@ -1,6 +1,6 @@
 ﻿using System;
 using K3NA_Remastered_2.Modules;
-using K3NA_Remastered_2.Modules.PerformerStuff;
+using K3NA_Remastered_2.Modules.PerformerStuff.Protocols;
 using K3NA_Remastered_2.ModulesImplementation;
 
 namespace K3NA_Remastered_2
@@ -22,8 +22,8 @@ namespace K3NA_Remastered_2
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
             //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
-            ProtoLoader.LoadProtocols();
-
+            var protocols = ProtoLoader.QualifyProtocols(ProtoLoader.LoadProtocols());
+            var standardProtocols = ProtoLoader.GetStandardProtocols(protocols);
 
             Console.ReadKey();
         }
