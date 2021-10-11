@@ -9,5 +9,7 @@ namespace K3NA_Remastered_2.Modules.RecognitionEngine
         //tasks: complete string parsing to speech pattern in StandardProtocol
         //add compairing system in SpeechPattern
         //start to design commands classes
+
+        //full rebuild speech analisys system to avoid code duplication
     }
 }

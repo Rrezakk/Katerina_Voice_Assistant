@@ -10,7 +10,10 @@ namespace K3NA_Remastered_2.Modules.RecognitionEngine
         public string[] DataStrings;
         public Types.Word Type;
         public string VariableName;
-        public readonly Types.Variable VariableType;
+        public SpeechUnit()
+        {
+            this.Type = Types.Word.Empty;
+        }
         public SpeechUnit(string data)
         {
             this.Data = data;
@@ -21,16 +24,23 @@ namespace K3NA_Remastered_2.Modules.RecognitionEngine
             this.DataStrings = data;
             this.Type = Types.Word.MultipleWord;
         }
-        public SpeechUnit(string varName,string vartype)
+        public SpeechUnit(string varName, Types.Word vartype)
         {
             this.VariableName = varName;
-            this.VariableType = vartype switch
-            {
-                "singleWord" => Types.Variable.SingleWord,
-                "doubleWord" => Types.Variable.DoubleWord,
-                _ => this.VariableType
-            };
-            this.Type = Types.Word.VariableWord;
+            this.Type = vartype;// switch
+            //{
+            //    "singleWord" => Types.Word.VarSingleWord,
+            //    "multipleWord" => Types.Word.VarMultipleWord,
+            //    _ => this.Type
+            //};
+            
+        }
+        public void AboutMe()
+        {
+            Console.WriteLine($"Type: {Type}");
+            Console.WriteLine($"Data: {Data}");
+            Console.WriteLine($"DataStrings: {DataStrings}");
+            Console.WriteLine($"VariableName: {VariableName}");
         }
     }
 }

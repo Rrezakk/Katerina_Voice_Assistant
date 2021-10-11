@@ -24,3 +24,11 @@ Commands{
 MakeSomething();
 }
 };
+Protocol:standard{
+Name{
+Hello world 2
+}
+Pattern{
+привет тебе, обыватель <var:singleWord:name>
+}
+};

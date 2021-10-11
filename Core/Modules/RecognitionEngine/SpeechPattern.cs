@@ -14,12 +14,9 @@ namespace K3NA_Remastered_2.Modules.RecognitionEngine
         {
             SingleWord,
             MultipleWord,
-            VariableWord,
-        }
-        public enum Variable
-        {
-            SingleWord,
-            DoubleWord,
+            VarSingleWord,
+            VarMultipleWord,
+            Empty,
         }
     }
     public class SpeechPattern
