@@ -4,12 +4,13 @@ using System.Text;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
 {
-    public class SpeechPattern
+    class sSpeechPattern
     {
-        public List<SpeechUnit> Units = new List<SpeechUnit>();
-        public SpeechPattern(List<SpeechUnit> units)
+        public List<sSpeechUnit> Units { get; } = new List<sSpeechUnit>();
+
+        public void AddUnit(sSpeechUnit unit)
         {
-            Units = units;
+            Units.Add(unit);
         }
     }
 }

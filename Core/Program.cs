@@ -1,12 +1,14 @@
 ﻿using System;
+using DeepMorphy;
 using K3NA_Remastered_2.Modules;
-using K3NA_Remastered_2.Modules.PerformerStuff.Protocols;
+using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesImplementation;
 
 namespace K3NA_Remastered_2
 {
-    internal static class Program
+    public static class Program
     {
+        public static readonly MorphAnalyzer MorphAnalyzer = new MorphAnalyzer(true, true, true,4096);
         private static void Main(string[] args)
         {
             //IModule srm = new SpeechModule();
@@ -22,8 +24,12 @@ namespace K3NA_Remastered_2
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
             //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
-            var protocols = ProtoLoader.QualifyProtocols(ProtoLoader.LoadProtocols());
-            var standardProtocols = ProtoLoader.GetStandardProtocols(protocols);
+            //var result = MorphAnalyzer.Parse("слово", "привет","закрой","ибрагим","очаровательно","она");
+            //foreach (var r in result)
+            //{
+            //    Console.WriteLine($"{r.Text}: {r.BestTag}");
+            //}
+
 
             Console.ReadKey();
         }

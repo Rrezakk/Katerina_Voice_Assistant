@@ -10,7 +10,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
     class DefaultProtocol:Protocol
     {
         public string Name;
-        public SpeechPattern Pattern;
+        public pSpeechPattern Pattern;
         public List<Command> Commands;
         public override void Construct(string protocol)
         {
@@ -24,11 +24,11 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             Console.WriteLine($"Protocol pattern: {pattern}");
             Console.WriteLine($"Protocol commands: {commands}");
             Console.WriteLine("-----------------------------");
-            Pattern = ParsePattern(pattern);
+            Pattern = ParseProtocolPattern(pattern);
             Commands = ParseCommands(commands);
             Name = name;
         }
-        public override SpeechPattern GetPattern()
+        public override pSpeechPattern GetPattern()
         {
             return Pattern;
         }

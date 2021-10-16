@@ -1,19 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
 {
-    public class ProtocolsParser
+    public static class ProtocolsParser
     {
-        public static SpeechPattern ParsePattern(string pattern)
+        public static pSpeechPattern ParseProtocolPattern(string pattern)
         {
-            throw new NotImplementedException();
+            var pSpeechPattern = new pSpeechPattern();
+            var units = pattern.Split(" ");
+            for (var i = 0; i < units.Length; i++){units[i] = units[i].Trim();}
+            foreach (var unit in units)
+            {
+                var pSpeechUnit = new pSpeechUnit(unit);
+                pSpeechPattern.AddUnit(pSpeechUnit);
+            }
+            return pSpeechPattern;
         }
         public static List<Command> ParseCommands(string pattern)
         {
             throw new NotImplementedException();
+        }
+
+        public static void ParsePatternUnit(string unit, out string chema, out string type, out string text)
+        {
+            var i = unit.IndexOf("<", StringComparison.Ordinal)+1;
+            var j = unit.IndexOf(":", StringComparison.Ordinal);
+            var k = unit.IndexOf(":", j+1, StringComparison.Ordinal)-1;
+            var m = unit.IndexOf(">", StringComparison.Ordinal) + ">".Length;
+            chema = unit.Substring(i, j - i);
+            type = unit.Substring(j+1, k - j);
+            text = unit.Substring(k+2, m - k-3);
         }
         public static string GetProtocolBlock(string protocol, string qualifier, string ends)
         {
