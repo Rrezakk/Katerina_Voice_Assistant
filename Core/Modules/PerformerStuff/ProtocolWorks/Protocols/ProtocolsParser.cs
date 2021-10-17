@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
+using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Tables;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
 {
@@ -20,12 +21,35 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             }
             return pSpeechPattern;
         }
-        public static List<Command> ParseCommands(string pattern)
+        public static List<Command> ParseCommands(string commands)
         {
-            throw new NotImplementedException();
-        }
+            //SayAny("Приветик","скучала по вам!","Здравствуйте, сэр");MakeSomething();
+            //Say("<var:name:in/out/auto>","arg2");
 
-        public static void ParsePatternUnit(string unit, out string chema, out string type, out string text)
+            var commandsArr = commands.Split(";");
+            var result = commandsArr.Select(ParseCommandUnit).ToList();
+            return result;
+        }
+        private static Command ParseCommandUnit(string unit)
+        {
+            //сначала парсим аргументы, мб не заменяем переменные по ParseTripleUnit
+            //Console.WriteLine(unit);
+            var i = unit.IndexOf("(", StringComparison.Ordinal);
+            var j = unit.LastIndexOf(")", StringComparison.Ordinal);
+
+            var name = unit.Substring(0, i);
+            //Console.WriteLine(name);
+            var command = CommandsTable.GetConcreteCommand(name);
+
+            var argumentsString = unit.Substring(i + 1, j - i - 1);
+            //Console.WriteLine(argumentsString);
+            var arguments = argumentsString.Split("\",\"");
+            command.Arguments = arguments;
+            return command;
+            //filling
+            //sending to executor
+        }
+        public static void ParseTripleUnit(string unit, out string chema, out string type, out string text)
         {
             var i = unit.IndexOf("<", StringComparison.Ordinal)+1;
             var j = unit.IndexOf(":", StringComparison.Ordinal);
@@ -79,6 +103,10 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
                 var m = protocol.IndexOf(/*"}"*/ends, k, StringComparison.InvariantCulture);
                 return protocol[k..m];
             }
+        }
+        public static string GetProtocolType(string protocol)
+        {
+            return GetProtocolBlock(protocol, "Protocol:", "{");
         }
     }
 }

@@ -7,6 +7,8 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands
 {
     public abstract class Command
     {
-        public abstract void Execute(object[] arguments);
+        public abstract string[] Arguments { get; set; }
+        public abstract void Execute();
+        //public abstract void Execute(object[] arguments);
     }
 }

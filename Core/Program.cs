@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DeepMorphy;
 using K3NA_Remastered_2.Modules;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
@@ -24,12 +25,16 @@ namespace K3NA_Remastered_2
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
             //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
+
+
+
             //var result = MorphAnalyzer.Parse("слово", "привет","закрой","ибрагим","очаровательно","она");
             //foreach (var r in result)
             //{
             //    Console.WriteLine($"{r.Text}: {r.BestTag}");
             //}
-
+            //DefaultProtocol proto = new DefaultProtocol();
+            //proto.Construct(ProtocolsLoader.GetProtocols().First());
 
             Console.ReadKey();
         }
