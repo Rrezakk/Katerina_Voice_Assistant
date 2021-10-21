@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using DeepMorphy;
 using K3NA_Remastered_2.Modules;
@@ -10,6 +11,43 @@ namespace K3NA_Remastered_2
     public static class Program
     {
         public static readonly MorphAnalyzer MorphAnalyzer = new MorphAnalyzer(true, true, true,4096);
+        private static readonly ProtocolsStorage ProtocolsStorage = new ProtocolsStorage();
+        private static void DebugProtocols()
+        {
+            foreach (var protocol in ProtocolsStorage.Protocols)
+            {
+                Console.WriteLine($"Loaded protocol: {protocol.Name}");
+                Console.WriteLine($"Commands: ");
+                foreach (var c in protocol.GetCommands())
+                {
+                    Console.WriteLine($"Command: {c.Name}");
+                    var args = c.Arguments.Str();
+                    if(args!="")
+                        Console.WriteLine($"Arguments: {args}");
+                }
+                Console.WriteLine("Pattern: ");
+                foreach (var unit in protocol.GetPattern().Units.Where(unit => unit.MorphList != null))
+                {
+                    if (unit.IsVariable)
+                    {
+                        Console.WriteLine($"    Variable: {unit.VariableName}");
+                        foreach (var morph in unit.MorphList)
+                        {
+                            Console.WriteLine($"        {morph.Text} - {morph.BestTag}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"    Word: ");
+                        foreach (var morph in unit.MorphList)
+                        {
+                            Console.WriteLine($"        {morph.Text} - {morph.BestTag}");
+                        }
+                    }
+                }
+            }
+        }
+        private static string Str(this string[] a) => string.Join(';', a);
         private static void Main(string[] args)
         {
             //IModule srm = new SpeechModule();
@@ -35,6 +73,10 @@ namespace K3NA_Remastered_2
             //}
             //DefaultProtocol proto = new DefaultProtocol();
             //proto.Construct(ProtocolsLoader.GetProtocols().First());
+
+            DebugProtocols();
+
+
 
             Console.ReadKey();
         }

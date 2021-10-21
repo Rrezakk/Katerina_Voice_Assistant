@@ -10,6 +10,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
     public class pSpeechUnit
     {
         public string VariableName;
+        public bool IsVariable = false;
         public IEnumerable<MorphInfo> MorphList;//https://github.com/lepeap/DeepMorphy/blob/master/gram.md
         public pSpeechUnit(){}
         public pSpeechUnit(string fillery)
@@ -28,10 +29,14 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
                 switch (chema)
                 {
                     case "var":
+                    {
+                        IsVariable = true;
                         //сопоставление типа и морфологии
                         //type -> MorphInfo 
                         VariableName = text;
+                        MorphList = new List<MorphInfo>();
                         break;
+                    }
                     case "word":
                     {
                         var args = text.Split("|");
@@ -46,5 +51,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
                 //single word
             }
         }
+
+        
     }
 }

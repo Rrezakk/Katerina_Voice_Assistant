@@ -4,6 +4,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands.Concre
 {
     public class ConsolePrintCommand:Command
     {
+        public override string Name { get; set; }
         public override string[] Arguments { get; set; }
         private bool Check()
         {

@@ -32,3 +32,14 @@ Pattern{
 привет тебе, обыватель <var:singleWord:name>
 }
 };
+Protocol:standard{
+Name{
+variative protocol
+}
+Pattern{
+найди <var:type1:varname> 
+}
+Commands{
+GoogleSearch(<varname>,true);
+}
+};

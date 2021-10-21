@@ -25,13 +25,26 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
         {
             //SayAny("Приветик","скучала по вам!","Здравствуйте, сэр");MakeSomething();
             //Say("<var:name:in/out/auto>","arg2");
-
+            Console.WriteLine("--------------------------------------------->>>");
             var commandsArr = commands.Split(";");
-            var result = commandsArr.Select(ParseCommandUnit).ToList();
+            foreach (var c in commandsArr)
+            {
+              Console.WriteLine($"Command: {c}");  
+            }
+            Console.WriteLine("--------------------------------------------->>>");
+            var result = new List<Command>();
+            foreach (var command in commandsArr)
+            {
+                if (IsNoneOrEmpty(command))
+                    continue;   
+                
+                result.Add(ParseCommandUnit(command));
+            }
             return result;
         }
         private static Command ParseCommandUnit(string unit)
         {
+            if (String.IsNullOrEmpty(unit)) return null;
             //сначала парсим аргументы, мб не заменяем переменные по ParseTripleUnit
             //Console.WriteLine(unit);
             var i = unit.IndexOf("(", StringComparison.Ordinal);
@@ -44,10 +57,20 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             var argumentsString = unit.Substring(i + 1, j - i - 1);
             //Console.WriteLine(argumentsString);
             var arguments = argumentsString.Split("\",\"");
+            for (var index = 0; index < arguments.Length; index++)
+            {
+                arguments[index] = arguments[index].Trim('"');
+            }
+
             command.Arguments = arguments;
+            command.Name = name;
             return command;
             //filling
             //sending to executor
+        }
+        private static bool IsNoneOrEmpty(string str)
+        {
+            return string.IsNullOrEmpty(str) || str == "none";
         }
         public static void ParseTripleUnit(string unit, out string chema, out string type, out string text)
         {
