@@ -4,7 +4,7 @@ using System.Text;
 
 namespace K3NA_Remastered_2.ModulesImplementation
 {
-    class ModuleBuffer
+    public class ModuleBuffer
     {
         private object _requestsLocker = new object();
         private Queue<ModuleRequest> _requests = new Queue<ModuleRequest>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq;
 using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using static K3NA_Remastered_2.Program;
@@ -10,8 +11,9 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
     public class pSpeechUnit
     {
         public string VariableName;
+        public string VariableTypeString;
         public bool IsVariable = false;
-        public IEnumerable<MorphInfo> MorphList;//https://github.com/lepeap/DeepMorphy/blob/master/gram.md
+        public MorphInfo Morph;//https://github.com/lepeap/DeepMorphy/blob/master/gram.md
         public pSpeechUnit(){}
         public pSpeechUnit(string fillery)
         {
@@ -34,20 +36,21 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
                         //сопоставление типа и морфологии
                         //type -> MorphInfo 
                         VariableName = text;
-                        MorphList = new List<MorphInfo>();
+                        VariableTypeString = type;
+                        Morph = null;//убрать заглушку
                         break;
                     }
                     case "word":
                     {
                         var args = text.Split("|");
-                        MorphList = Program.MorphAnalyzer.Parse(args);
+                        Morph = Program.MorphAnalyzer.Parse(args).First();
                         break;
                     }
                 }
             }
             else
             {
-                MorphList = Program.MorphAnalyzer.Parse(new []{unit});
+                Morph = Program.MorphAnalyzer.Parse(new []{unit}).First();
                 //single word
             }
         }

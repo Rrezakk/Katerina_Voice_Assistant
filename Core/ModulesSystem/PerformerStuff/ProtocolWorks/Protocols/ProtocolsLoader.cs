@@ -10,14 +10,14 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
         public const string ProtocolsPath = "StandardProtocols\\";
         public static string[] GetProtocols(string folder = ProtocolsPath)
         {
-            Console.WriteLine("Loading protocols");
+            //Console.WriteLine("Loading protocols");
             var protocols = GetProtocolsPaths(folder);
-            Console.WriteLine($"Protocol files found: {protocols.Length}");
+            //Console.WriteLine($"Protocol files found: {protocols.Length}");
             var lines = GetAllProtocolsLines(protocols);
-            Console.WriteLine($"Lines total: {lines.Length}");
+            //Console.WriteLine($"Lines total: {lines.Length}");
             var splittedProtocols = SplitProtocols(lines);
-            Console.Write($"Protocols founded total: ");
-            splittedProtocols.ForEach(Console.WriteLine);
+            //Console.Write($"Protocols founded total: ");
+            //splittedProtocols.ForEach(Console.WriteLine);
             return splittedProtocols.ToArray();
         }
         private static IEnumerable<string> GetProtocolLines(string path)
@@ -73,12 +73,12 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
                     if (line.Contains("Protocol:"))
                     {
                         start = i;
-                        Console.WriteLine($"    Found protocol starts at: {i}");//debug
+                        //Console.WriteLine($"    Found protocol starts at: {i}");//debug
                     }
 
                     if (line.Contains("};"))
                     {
-                        Console.WriteLine($"    Ends at: {i}"); //debug
+                        //Console.WriteLine($"    Ends at: {i}"); //debug
                         var end = i;
                         var ctr = 0; //debug
                         var protocolStrings = "";
@@ -88,7 +88,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
                             ctr++;
                             protocolStrings += lines[start + j];
                         }
-                        Console.WriteLine($"    Reserves {ctr} lines"); //debug
+                        //Console.WriteLine($"    Reserves {ctr} lines"); //debug
                         result.Add(protocolStrings);
                         offset = ++end;
                         break;

@@ -5,15 +5,15 @@ using System.Text;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Variables
 {
-    public static class VariableStorage
+    public class VariableStorage//динамический класс, создается в контексте распознанного протокола
     {
-        private static readonly List<Variable> Variables = new List<Variable>();
+        private readonly List<Variable> Variables = new List<Variable>();
 
-        public static Variable GetVariable(string name)
+        public Variable GetVariable(string name)
         {
             return Variables.FirstOrDefault(v => v.Name == name);
         }
-        public static void SetVariable(string name, string content, string filler = "VariableStorage setter")
+        public void SetVariable(string name, string content, string filler = "VariableStorage setter")
         {
             var variable = Variables.FirstOrDefault(v => v.Name == name);
             if (variable != null)

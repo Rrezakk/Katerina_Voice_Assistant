@@ -4,7 +4,7 @@ using System.Text;
 
 namespace K3NA_Remastered_2.ModulesImplementation
 {
-    interface IModule
+    public interface IModule
     {
         public string Name { get; set; }
         public ModuleBuffer InBuffer { get; set; }

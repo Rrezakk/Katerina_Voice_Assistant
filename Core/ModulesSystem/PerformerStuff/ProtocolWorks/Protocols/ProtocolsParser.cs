@@ -25,13 +25,13 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
         {
             //SayAny("Приветик","скучала по вам!","Здравствуйте, сэр");MakeSomething();
             //Say("<var:name:in/out/auto>","arg2");
-            Console.WriteLine("--------------------------------------------->>>");
+            //Console.WriteLine("--------------------------------------------->>>");
             var commandsArr = commands.Split(";");
-            foreach (var c in commandsArr)
-            {
-              Console.WriteLine($"Command: {c}");  
-            }
-            Console.WriteLine("--------------------------------------------->>>");
+            //foreach (var c in commandsArr)
+            //{
+            //  Console.WriteLine($"  Command: {c}");  
+            //}
+            //Console.WriteLine("--------------------------------------------->>>");
             var result = new List<Command>();
             foreach (var command in commandsArr)
             {

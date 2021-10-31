@@ -7,7 +7,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
 {
     public class ProtocolsStorage
     {
-        public List<Protocol> Protocols = new List<Protocol>();
+        public readonly List<Protocol> Protocols = new List<Protocol>();
         public ProtocolsStorage()
         {
             foreach (var protocol in ProtocolsLoader.GetProtocols())
@@ -18,5 +18,6 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
                 Protocols.Add(proto);
             }
         }
+
     }
 }
