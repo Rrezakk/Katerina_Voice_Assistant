@@ -5,11 +5,11 @@ using System.Text;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
 {
-    public class pSpeechPattern
+    public class PSpeechPattern
     {
-        public List<pSpeechUnit> Units { get; } = new List<pSpeechUnit>();
+        public List<PSpeechUnit> Units { get; } = new List<PSpeechUnit>();
 
-        public void AddUnit(pSpeechUnit unit)
+        public void AddUnit(PSpeechUnit unit)
         {
             Units.Add(unit);
         }
@@ -20,7 +20,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
             var ptr = 0;
             foreach (var unit in Units)
             {
-                ans[ptr++] = unit.Morph.BestTag.Lemma;
+                ans[ptr++] = unit?.Morph?.First()?.BestTag?.Lemma;
             }
             return ans;
         }

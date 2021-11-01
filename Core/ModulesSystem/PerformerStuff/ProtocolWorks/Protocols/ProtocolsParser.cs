@@ -9,14 +9,14 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
 {
     public static class ProtocolsParser
     {
-        public static pSpeechPattern ParseProtocolPattern(string pattern)
+        public static PSpeechPattern ParseProtocolPattern(string pattern)
         {
-            var pSpeechPattern = new pSpeechPattern();
+            var pSpeechPattern = new PSpeechPattern();
             var units = pattern.Split(" ");
-            for (var i = 0; i < units.Length; i++){units[i] = units[i].Trim();}
+            for (var i = 0; i < units.Length; i++){units[i] = units[i].Trim().Trim(',').TrimEnd('.');}
             foreach (var unit in units)
             {
-                var pSpeechUnit = new pSpeechUnit(unit);
+                var pSpeechUnit = new PSpeechUnit(unit);
                 pSpeechPattern.AddUnit(pSpeechUnit);
             }
             return pSpeechPattern;
@@ -74,13 +74,24 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
         }
         public static void ParseTripleUnit(string unit, out string chema, out string type, out string text)
         {
-            var i = unit.IndexOf("<", StringComparison.Ordinal)+1;
+            var i = unit.IndexOf("<", StringComparison.Ordinal) + 1;
             var j = unit.IndexOf(":", StringComparison.Ordinal);
-            var k = unit.IndexOf(":", j+1, StringComparison.Ordinal)-1;
+            var k = unit.IndexOf(":", j + 1, StringComparison.Ordinal) - 1;
             var m = unit.IndexOf(">", StringComparison.Ordinal) + ">".Length;
-            chema = unit.Substring(i, j - i);
-            type = unit.Substring(j+1, k - j);
-            text = unit.Substring(k+2, m - k-3);
+            if (k==-1)
+            {
+                chema = unit.Substring(i, j - i);
+                type = unit.Substring(j+1, m - j - 1);
+                text = "";
+            }
+            else
+            {
+                chema = unit.Substring(i, j - i);
+                type = unit.Substring(j + 1, k - j);
+                text = unit.Substring(k + 2, m - k - 3);
+            }
+           
+           
         }
         public static string GetProtocolBlock(string protocol, string qualifier, string ends)
         {

@@ -14,7 +14,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             
         }
         public abstract void Construct(string protocol);
-        public abstract pSpeechPattern GetPattern();
+        public abstract PSpeechPattern GetPattern();
         public abstract List<Command> GetCommands();
     }
 }

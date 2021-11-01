@@ -66,23 +66,32 @@ namespace K3NA_Remastered_2
                 Console.WriteLine($"Commands: ");
                 foreach (var c in protocol.GetCommands())
                 {
-                    Console.WriteLine($"Command: {c.Name}");
+                    Console.WriteLine($"    Command: {c.Name}");
                     var args = c.Arguments.Str();
                     if(args!="")
-                        Console.WriteLine($"Arguments: {args}");
+                        Console.WriteLine($"        Arguments: {args}");
                 }
                 Console.WriteLine("Pattern: ");
                 foreach (var unit in protocol.GetPattern().Units/*.Where(unit => unit.Morph != null)*/)
                 {
                     if (unit.IsVariable)
                     {
-                        Console.WriteLine($"    Variable: {unit.VariableName} : {unit.VariableTypeString}");
-                        Console.WriteLine($"        {unit?.Morph?.Text} - {unit?.Morph?.BestTag}");
+                        Console.WriteLine($"    Variable: {unit.VariableName} : {unit.TypeString}");
+                        if(unit.Morph==null)continue;
+                        foreach (var morph in unit.Morph)
+                        {
+                            Console.WriteLine($"        {morph?.Text} - {morph?.BestTag}");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine($"    Word: ");
-                        Console.WriteLine($"        {unit?.Morph?.Text} - {unit?.Morph?.BestTag}");
+                        if (unit.Morph == null) continue;
+                        Console.WriteLine($"    Word [{unit.TypeString}]: ");
+                        foreach (var morph in unit.Morph)
+                        {
+                            Console.WriteLine($"        {morph?.Text} - {morph?.BestTag}");
+                        }
+                        
                     }
                 }
             }
@@ -91,6 +100,34 @@ namespace K3NA_Remastered_2
         private static void Main(string[] args)
         {
             DebugProtocols();
+
+
+
+            var phrases = new List<string>(){ "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
+            var relTable = new List<List<double>>();
+            foreach (var phrase in phrases)
+            {
+               var s = new List<double>();
+                foreach (var protocol in ProtocolsStorage.Protocols)
+                {
+                    s.Add(RelevanceAnalyzer.GetRelevance(new sSpeechPattern(phrase),protocol.GetPattern()));
+                }
+                relTable.Add(s);
+            }
+
+            for (var index = 0; index < relTable.Count; index++)
+            {
+                var line = relTable[index];
+                Console.Write($"{phrases[index]}: ");
+                foreach (var elem in line)
+                {
+                    Console.Write($"{elem:F2} ");
+                }
+                Console.WriteLine();
+            }
+            
+            
+
 
             //LoadModules();
 

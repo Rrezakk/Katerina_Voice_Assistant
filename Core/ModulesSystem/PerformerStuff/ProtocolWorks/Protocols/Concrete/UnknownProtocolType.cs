@@ -15,9 +15,9 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             Name = "Unknown";
         }
 
-        public override pSpeechPattern GetPattern()
+        public override PSpeechPattern GetPattern()
         {
-            return new pSpeechPattern();
+            return new PSpeechPattern();
         }
 
         public override List<Command> GetCommands()
