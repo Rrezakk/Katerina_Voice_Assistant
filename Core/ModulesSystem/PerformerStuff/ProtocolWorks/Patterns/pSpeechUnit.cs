@@ -20,9 +20,9 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
         {
             Fill(fillery);
         }
-        public List<string> MorphToStrings() => Morph.Select(m => m.BestTag.ToString()).ToList();
-        public List<string> TextStrings() => Morph.Select(m => m.Text).ToList();
-        public List<string> LemmasStrings() => Morph.Select(m => m.BestTag.Lemma).ToList();
+        //public List<string> MorphToStrings() => Morph.Select(m => m.BestTag.ToString()).ToList();
+        //public List<string> TextStrings() => Morph.Select(m => m.Text).ToList();
+        //public List<string> LemmasStrings() => Morph.Select(m => m.BestTag.Lemma).ToList();
         public void Fill(string unit)
         {
             //<word:any:привет|здорова|хеллоу>
@@ -52,16 +52,33 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
                     {
                         switch (TypeString)
                         {
-                                case "any":
-                                    var args = text.Split("|");
-                                    Morph = Program.MorphAnalyzer.Parse(args).ToList() /*.First()*/;
-                                    break;
-                                case "similar":
-                                    Morph = Program.MorphAnalyzer.Parse(new string[]{text}).ToList()  /*.First()*/;
-                                    break;
-                                case "morph":
-                                    //morph processor
-                                    break;
+                            case "any":
+                            {
+                                var args = text.Split("|");
+                                Morph = MorphAnalyzer.Parse(args).ToList() /*.First()*/;
+                                break;
+                            }
+                            case "similar":
+                            {
+                                Morph = MorphAnalyzer.Parse(text).ToList() /*.First()*/;
+                                break;
+                            }
+                            case "morph":
+                            {
+                                //morph processor
+                                //List<MorphInfo> Morph with 1 unit
+                                break;
+                            }
+                            case "anymorph":
+                            {
+                                var args = text.Split("|");
+                                foreach (var morphString in args)
+                                {
+                                    //morph processor for morphString
+                                }
+                                //List<MorphInfo> Morph with args.count elements
+                                break;
+                            }
                         }
                         break;
                     }

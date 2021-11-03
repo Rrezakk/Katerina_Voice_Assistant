@@ -4,11 +4,12 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using DeepMorphy;
 using K3NA_Remastered_2.Modules;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Variables;
 using K3NA_Remastered_2.ModulesImplementation;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables;
 
 namespace K3NA_Remastered_2
 {
@@ -104,26 +105,10 @@ namespace K3NA_Remastered_2
 
 
             var phrases = new List<string>(){ "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
-            var relTable = new List<List<double>>();
             foreach (var phrase in phrases)
             {
-               var s = new List<double>();
-                foreach (var protocol in ProtocolsStorage.Protocols)
-                {
-                    s.Add(RelevanceAnalyzer.GetRelevance(new sSpeechPattern(phrase),protocol.GetPattern()));
-                }
-                relTable.Add(s);
-            }
-
-            for (var index = 0; index < relTable.Count; index++)
-            {
-                var line = relTable[index];
-                Console.Write($"{phrases[index]}: ");
-                foreach (var elem in line)
-                {
-                    Console.Write($"{elem:F2} ");
-                }
-                Console.WriteLine();
+                var proto = RelevanceAnalyzer.GetMaxRelevanceProtocol(phrase, ProtocolsStorage.Protocols);
+                Console.WriteLine($"Protocol: {proto.Name}");
             }
             
             

@@ -1,14 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
+using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Compairing
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing
 {
-    public class RelevanceAnalyzer
+    public static class RelevanceAnalyzer
     {
+        public const double MinRelevance = 49d;
+        public static Protocol GetMaxRelevanceProtocol(string phrase, List<Protocol> protocols)
+        {
+            return GetMaxRelevanceProtocol(new sSpeechPattern(phrase), protocols);
+        }
+        public static Protocol GetMaxRelevanceProtocol(sSpeechPattern phrase,List<Protocol> protocols)
+        {
+            var relTable = protocols.Select(protocol => RelevanceAnalyzer.GetRelevance(phrase, protocol.GetPattern())).ToList();
+            var outstr = "";
+            var max = 0d;
+            foreach (var line in relTable)
+            {
+                if (line>max)
+                {
+                    max = line;
+                }
+                outstr += $"[{line:F1}],";
+            }
+            outstr = outstr.TrimEnd(',');
+            var index = relTable.IndexOf(max);
+            Console.WriteLine($"Relevance Table: {outstr}");
+            Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
+            return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
+        }
         public static double GetRelevance(sSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
         {
             if (protocolPattern.Units.Count==0)
@@ -32,7 +56,13 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Compairing
                 //unit2 = speechPattern.Units[i]
                 if (protocolPattern.Units[i].IsVariable)
                 {
-                    Console.WriteLine($"Variable: 0");
+                    switch (protocolPattern.Units[i].TypeString)
+                    {
+                        default:
+                            Console.WriteLine($"Variable: 0");
+                            break;
+                    }
+
                     continue;
                 }
                 var compareResult = 0d;
@@ -57,9 +87,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Compairing
             }
             Console.WriteLine($"CountRel: {countRel}");
             return (commulative + countRel) / (protocolPattern.Units.Count+1)/*processedUnits*/;
-
         }
-
         private static double AnyUnitsCompare(MorphInfo speech, IEnumerable<MorphInfo> protos)
         {
             var table = protos.Select(proto => CommonUnitsCompare(speech, proto)).ToList();
@@ -94,7 +122,6 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Compairing
             else { curl = Convert.ToInt16(Math.Round(currentword.Length * 0.67, 0)); }
             return currentword.Substring(0, curl);
         }
-
         private static string CutBestTag(Tag tag)
         {
             var index = tag.ToString().IndexOf("Tags:", StringComparison.Ordinal) + "Tags:".Length;
