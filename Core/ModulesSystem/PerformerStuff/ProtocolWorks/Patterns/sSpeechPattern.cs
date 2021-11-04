@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
+﻿using System.Collections.Generic;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
-    public class sSpeechPattern
+    public class SSpeechPattern
     {
-        public sSpeechPattern(string pattern)
+        public SSpeechPattern(string pattern)
         {
             var ptrn = pattern.Split(' ');
             foreach (var unit in ptrn)
             {
-                AddUnit(new sSpeechUnit(unit));
+                AddUnit(new SSpeechUnit(unit));
             }
         }
-        public List<sSpeechUnit> Units { get; } = new List<sSpeechUnit>();
-        public void AddUnit(sSpeechUnit unit)
+        public List<SSpeechUnit> Units { get; } = new List<SSpeechUnit>();
+        public void AddUnit(SSpeechUnit unit)
         {
             Units.Add(unit);
         }

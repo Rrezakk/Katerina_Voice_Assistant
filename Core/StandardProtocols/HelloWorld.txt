@@ -40,6 +40,6 @@ Pattern{
 найди <var:type1:varname> 
 }
 Commands{
-GoogleSearch(<varname>,true);
+GoogleSearch("<varname>","true");
 }
 };

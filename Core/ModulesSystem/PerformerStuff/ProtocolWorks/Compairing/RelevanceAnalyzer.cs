@@ -4,6 +4,7 @@ using System.Linq;
 using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing
 {
@@ -12,9 +13,9 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         public const double MinRelevance = 49d;
         public static Protocol GetMaxRelevanceProtocol(string phrase, List<Protocol> protocols)
         {
-            return GetMaxRelevanceProtocol(new sSpeechPattern(phrase), protocols);
+            return GetMaxRelevanceProtocol(new SSpeechPattern(phrase), protocols);
         }
-        public static Protocol GetMaxRelevanceProtocol(sSpeechPattern phrase,List<Protocol> protocols)
+        public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
         {
             var relTable = protocols.Select(protocol => RelevanceAnalyzer.GetRelevance(phrase, protocol.GetPattern())).ToList();
             var outstr = "";
@@ -33,7 +34,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
             return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
         }
-        public static double GetRelevance(sSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
+        public static double GetRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
         {
             if (protocolPattern.Units.Count==0)
             {

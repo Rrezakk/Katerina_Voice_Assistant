@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
-using static K3NA_Remastered_2.Program;
+using static K3NA_Remastered_2.Core;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
     public class PSpeechUnit
     {
@@ -86,7 +83,7 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
             }
             else
             {
-                Morph = Program.MorphAnalyzer.Parse(new []{unit}).ToList();
+                Morph = Core.MorphAnalyzer.Parse(new []{unit}).ToList();
                 TypeString = "common";
                 //single word
             }

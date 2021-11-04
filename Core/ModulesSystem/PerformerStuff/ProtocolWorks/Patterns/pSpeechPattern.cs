@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
 {

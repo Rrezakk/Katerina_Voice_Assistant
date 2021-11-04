@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 
 namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
 {

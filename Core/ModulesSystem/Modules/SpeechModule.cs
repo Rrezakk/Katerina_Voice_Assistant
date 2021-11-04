@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesImplementation;
 using k3na_voice;
+using ModuleBuffer = K3NA_Remastered_2.ModulesSystem.Modules.Implementation.ModuleBuffer;
 using ModuleRequest = K3NA_Remastered_2.ModulesImplementation.ModuleRequest;
 
-namespace K3NA_Remastered_2.Modules
+namespace K3NA_Remastered_2.ModulesSystem.Modules
 {
     
     internal sealed class SpeechModule:IModule
@@ -25,7 +26,7 @@ namespace K3NA_Remastered_2.Modules
             Console.WriteLine("SRM constructed");
         }
         public string Name { get; set; } = "SRM";
-        public ModulesImplementation.ModuleBuffer InBuffer { get; set; } = new ModulesImplementation.ModuleBuffer();
+        public ModuleBuffer InBuffer { get; set; } = new ModuleBuffer();
         private readonly List<string> _subscribers = new List<string>();
         private SpeechRecognitionModule _srm;
         private SubscribeOverride _override;

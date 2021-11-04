@@ -1,45 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
 using DeepMorphy;
 using K3NA_Remastered_2.Modules;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Variables;
 using K3NA_Remastered_2.ModulesImplementation;
+using K3NA_Remastered_2.ModulesSystem.Modules;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables;
 
 namespace K3NA_Remastered_2
 {
-    public static class Program
+    public static class Core
     {
         public static readonly MorphAnalyzer MorphAnalyzer = new MorphAnalyzer(true, true, true,4096);
         public static readonly ProtocolsStorage ProtocolsStorage = new ProtocolsStorage();//automaticaly loades protocols
         public static readonly VariableStorage  GlobalVariables = new VariableStorage();//global variables storage
+        public static readonly CommandsExecutor CommandsExecutor = new CommandsExecutor();//singleton
         public static void OnSpeech(string speech)
         {
-            var pattern = new sSpeechPattern(speech);
-            var relevance = new double[ProtocolsStorage.Protocols.Count];
-            var ptr = 0;
-            foreach (var protocol in ProtocolsStorage.Protocols)//ProtocolsStorage foreach
-            {
-                relevance[ptr++] = RelevanceAnalyzer.GetRelevance(pattern, protocol.GetPattern());//GetRelevance
-            }
-            var bestProtoIndex = 0;
-            var acc = 0d;
-            for (var i = 0; i < relevance.Length; i++)//GetMaxRelevance
-            {
-                if (!(relevance[i] > acc)) continue;
-                acc = relevance[i];
-                bestProtoIndex = i;
-            }
-            var targetProtocol = ProtocolsStorage.Protocols[bestProtoIndex];//GetProtocolByMaxRelevance
-
-            //filling variables
-            //casting commands
-            //enqueueing commands
+            var speechPattern = new SSpeechPattern(speech);
+            var proto = RelevanceAnalyzer.GetMaxRelevanceProtocol(speechPattern, ProtocolsStorage.Protocols);
+            Console.WriteLine($"Protocol: {proto.Name}");
+            var storage = new VariableStorage();
+            storage.ExecuteRecognizedProtocol(proto, speechPattern);//конечная точка в обработке
         }
 
         public static readonly List<IModule> Modules = new List<IModule>();
@@ -97,22 +82,21 @@ namespace K3NA_Remastered_2
                 }
             }
         }
+
+        private static void Test()
+        {
+            var phrases = new List<string>() { "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
+            foreach (var phrase in phrases)
+            {
+                OnSpeech(phrase);
+            }
+        }
         private static string Str(this string[] a) => string.Join(';', a);
         private static void Main(string[] args)
         {
-            DebugProtocols();
+            //DebugProtocols();
 
-
-
-            var phrases = new List<string>(){ "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
-            foreach (var phrase in phrases)
-            {
-                var proto = RelevanceAnalyzer.GetMaxRelevanceProtocol(phrase, ProtocolsStorage.Protocols);
-                Console.WriteLine($"Protocol: {proto.Name}");
-            }
-            
-            
-
+            Test();
 
             //LoadModules();
 

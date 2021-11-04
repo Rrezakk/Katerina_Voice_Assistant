@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using K3NA_Remastered_2.ModulesImplementation;
 
-namespace K3NA_Remastered_2.ModulesImplementation
+namespace K3NA_Remastered_2.ModulesSystem.Modules.Implementation
 {
     public class ModuleBuffer
     {
-        private object _requestsLocker = new object();
+        private readonly object _requestsLocker = new object();
         private Queue<ModuleRequest> _requests = new Queue<ModuleRequest>();
         public delegate void RequestDelegate(ModuleRequest request);
 
