@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Tables;
 using static K3NA_Remastered_2.Core;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
@@ -24,8 +27,10 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
         {
             //<word:any:привет|здорова|хеллоу>
             //<var:type:name>
+            //<var:anysimilar:завтра|сегодня|вчера|когда-нибудь>
             //<word:morph:concretemorph>
             //<word:similar:каланхоэ>
+            //<word:anysimilar:завтра|сегодня|вчера|когда-нибудь>
             //слово
             if (unit.Contains("<"))
             {
@@ -37,11 +42,15 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
                     case "var":
                     {
                         IsVariable = true;
-                            //сопоставление типа и морфологии
-                            //type -> MorphInfo 
-                            //simmilar as word with type morph
-                            //morph processor
-                            VariableName = text;
+                        switch (TypeString)
+                        {
+                                case "anysimilar":
+                                    Morph = AnySimilarProcessor(text);//в будущем добавить поддержку многословных эталонов
+                                    break;
+                                case "newType?Fuck!How to create it?!":
+                                    break;
+                        }
+                        VariableName = text;
                         Morph = null;//убрать заглушку
                         break;
                     }
@@ -60,20 +69,9 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
                                 Morph = MorphAnalyzer.Parse(text).ToList() /*.First()*/;
                                 break;
                             }
-                            case "morph":
+                            case "anysimilar":
                             {
-                                //morph processor
-                                //List<MorphInfo> Morph with 1 unit
-                                break;
-                            }
-                            case "anymorph":
-                            {
-                                var args = text.Split("|");
-                                foreach (var morphString in args)
-                                {
-                                    //morph processor for morphString
-                                }
-                                //List<MorphInfo> Morph with args.count elements
+                                Morph = AnySimilarProcessor(text);
                                 break;
                             }
                         }
@@ -81,11 +79,22 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
                     }
                 }
             }
-            else
+            else//common single word
             {
                 Morph = Core.MorphAnalyzer.Parse(new []{unit}).ToList();
                 TypeString = "common";
-                //single word
+            }
+        }
+        private static List<MorphInfo> AnySimilarProcessor(string text)
+        {
+            if (text.StartsWith("#") && text.EndsWith("_WList"))
+            {
+                throw new Exception("Under developement: [anysimilar: #NAME_WList] model");
+            }
+            else
+            {
+                var array = text.Split('|');
+                return MorphAnalyzer.Parse(array).ToList();
             }
         }
     }

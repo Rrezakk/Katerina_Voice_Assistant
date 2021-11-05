@@ -8,7 +8,9 @@ using K3NA_Remastered_2.ModulesSystem.Modules;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables;
+using K3NA_Remastered_2.ModulesSystem.Submodules;
 
 namespace K3NA_Remastered_2
 {
@@ -17,7 +19,9 @@ namespace K3NA_Remastered_2
         public static readonly MorphAnalyzer MorphAnalyzer = new MorphAnalyzer(true, true, true,4096);
         public static readonly ProtocolsStorage ProtocolsStorage = new ProtocolsStorage();//automaticaly loades protocols
         public static readonly VariableStorage  GlobalVariables = new VariableStorage();//global variables storage
-        public static readonly CommandsExecutor CommandsExecutor = new CommandsExecutor();//singleton
+        public static readonly SubModulesContainer SubModules = new SubModulesContainer(new List<ISubModule>(){new CommandsExecutor()});
+        public static readonly ModulesContainer Modules = new ModulesContainer();
+        
         public static void OnSpeech(string speech)
         {
             var speechPattern = new SSpeechPattern(speech);
@@ -25,24 +29,6 @@ namespace K3NA_Remastered_2
             Console.WriteLine($"Protocol: {proto.Name}");
             var storage = new VariableStorage();
             storage.ExecuteRecognizedProtocol(proto, speechPattern);//конечная точка в обработке
-        }
-
-        public static readonly List<IModule> Modules = new List<IModule>();
-        private static void LoadModules()
-        {
-            Modules.AddRange(new List<IModule>(){new SpeechModule(), new TestModule()});
-            foreach (var module in Modules)
-            {
-                try
-                {
-                    module.Init();
-                    MBus.AuthModule(module);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Loading module error: {module.Name} : {e}");
-                }
-            }
         }
         private static void DebugProtocols()
         {
@@ -82,23 +68,21 @@ namespace K3NA_Remastered_2
                 }
             }
         }
-
         private static void Test()
         {
-            var phrases = new List<string>() { "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
-            foreach (var phrase in phrases)
-            {
-                OnSpeech(phrase);
-            }
+            //var phrases = new List<string>() { "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
+            //foreach (var phrase in phrases)
+            //{
+            //    OnSpeech(phrase);
+            //}
         }
         private static string Str(this string[] a) => string.Join(';', a);
         private static void Main(string[] args)
         {
-            //DebugProtocols();
-
             Test();
-
-            //LoadModules();
+            //DebugProtocols();
+            SubModules.Init();//must be performed before accessing SubModules
+            //Modules.Load(new List<IModule>(){new SpeechModule(), new TestModule()});
 
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
@@ -113,6 +97,8 @@ namespace K3NA_Remastered_2
             //}
             //DefaultProtocol proto = new DefaultProtocol();
             //proto.Construct(ProtocolsLoader.GetProtocols().First());
+
+            //CommandsExecutor usage: SubModules.GetCommandsExecutor().
             Console.ReadKey();
         }
       

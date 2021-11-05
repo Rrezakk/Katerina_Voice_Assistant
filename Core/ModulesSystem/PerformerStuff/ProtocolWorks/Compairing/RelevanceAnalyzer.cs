@@ -53,12 +53,18 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
 
             for (var i = 0; i < protoUnitsCount; i++)
             {
+                var compareResult = 0d;
                 //unit1 = protocolPattern.Units[i]
                 //unit2 = speechPattern.Units[i]
                 if (protocolPattern.Units[i].IsVariable)
                 {
                     switch (protocolPattern.Units[i].TypeString)
                     {
+                        case "anysimilar":
+                            compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
+                            commulative += compareResult;
+                            Console.WriteLine($"AnySimilar (VARIABLE): {compareResult}");
+                            break;
                         default:
                             Console.WriteLine($"Variable: 0");
                             break;
@@ -66,7 +72,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
 
                     continue;
                 }
-                var compareResult = 0d;
                 switch (protocolPattern.Units[i].TypeString)
                 {
                     case "common":
@@ -84,10 +89,31 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                         commulative += compareResult;
                         Console.WriteLine($"Any: {compareResult}");
                         break;
+                    case "anysimilar":
+                        compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
+                        commulative += compareResult;
+                        Console.WriteLine($"AnySimilar: {compareResult}");
+                        break;
                 }
             }
             Console.WriteLine($"CountRel: {countRel}");
             return (commulative + countRel) / (protocolPattern.Units.Count+1)/*processedUnits*/;
+        }
+
+        private static double AnySimilarUnitsCompare(PSpeechPattern protocolPattern,SSpeechPattern speechPattern,int i)
+        {
+            var u = new double[protocolPattern.Units[i].Morph.Count];
+            var max = 0d;
+            var maxIndex = 0;
+            for (var j = 0; j < u.Length; j++)
+            {
+                u[j] = SimilarUnitsCompare(speechPattern.Units[i].MorphInfo,
+                    protocolPattern.Units[i].Morph[j]);
+                if (!(u[j] > max)) continue;
+                max = u[j];
+                maxIndex = j;
+            }
+            return  u[maxIndex];
         }
         private static double AnyUnitsCompare(MorphInfo speech, IEnumerable<MorphInfo> protos)
         {

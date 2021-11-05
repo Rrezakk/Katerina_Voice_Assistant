@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
+﻿using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Tables
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Tables
 {
     
         public static class ProtocolTypesTable

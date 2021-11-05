@@ -114,7 +114,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             var commands = protocol.GetCommands();
             this.FillArguments(ref commands);//вставляем переменные в аргументы
             var container = new CommandsContainer(commands,this,protocol.Name);//связываем
-            Core.CommandsExecutor.EnqueueNew(container); //выставляем команды в очередь на выполнение
+            Core.SubModules.CommandsExecutor().EnqueueNew(container); //выставляем команды в очередь на выполнение
         }
     }
 }
