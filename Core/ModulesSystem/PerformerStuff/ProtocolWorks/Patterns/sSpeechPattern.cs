@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
@@ -27,6 +29,17 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
             }
 
             return raw;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var unit in Units)
+            {
+                stringBuilder.Append("["+unit.ToString()+"] ");
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

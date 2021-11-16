@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DeepMorphy.Model;
+using NAudio.SoundFont;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
@@ -19,6 +21,10 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
             this.MorphInfo = Core.MorphAnalyzer.Parse(new string[] {unit}).First();
             this.Lemma = MorphInfo.BestTag.Lemma;
             this.Text = unit;
+        }
+        public override string ToString()
+        {
+            return $"{Text}";
         }
     }
 }

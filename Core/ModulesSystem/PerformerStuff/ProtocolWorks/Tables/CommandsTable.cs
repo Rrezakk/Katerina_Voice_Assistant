@@ -1,6 +1,5 @@
-﻿using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands.ConcreteCommands;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
+﻿using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands.ConcreteCommands;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Tables
 {

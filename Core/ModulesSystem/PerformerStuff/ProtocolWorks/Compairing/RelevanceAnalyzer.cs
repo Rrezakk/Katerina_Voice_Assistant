@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using DeepMorphy.Model;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing
 {
@@ -17,7 +17,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         }
         public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
         {
-            var relTable = protocols.Select(protocol => RelevanceAnalyzer.GetRelevance(phrase, protocol.GetPattern())).ToList();
+            var relTable = protocols.Select(protocol => RelevanceAnalyzer.MultipleRelevance(phrase, protocol.GetPattern())).ToList();
             var outstr = "";
             var max = 0d;
             foreach (var line in relTable)
@@ -34,7 +34,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
             return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
         }
-        public static double GetRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
+        public static double MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
         {
             if (protocolPattern.Units.Count==0)
             {
@@ -42,62 +42,62 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             }
             var countRel = ((double)protocolPattern.Units.Count -
                             Math.Abs((double)protocolPattern.Units.Count - (double)speechPattern.Units.Count)) /
-                (double)protocolPattern.Units.Count*100d;
-            Console.WriteLine($"Units processing:");
+                (double)protocolPattern.Units.Count*100d;//релевантность совпадения по количеству элементов
             var protoUnitsCount = protocolPattern.Units.Count;
             var commulative = 0d;
-            if (protoUnitsCount>speechPattern.Units.Count)
+            if (protoUnitsCount>speechPattern.Units.Count)//ограничение количества итераций по количеству юнитов протокола
             {
                 protoUnitsCount = speechPattern.Units.Count;
             }
 
+            Console.WriteLine($"Units processing:");
+            Console.WriteLine($"CountRel: {countRel}");
             for (var i = 0; i < protoUnitsCount; i++)
             {
-                var compareResult = 0d;
-                //unit1 = protocolPattern.Units[i]
-                //unit2 = speechPattern.Units[i]
-                if (protocolPattern.Units[i].IsVariable)
+                commulative += SingleRelevance(speechPattern, protocolPattern, i,i);
+            }
+            return (commulative + countRel) / (protocolPattern.Units.Count+1)/*processedUnits*/;
+        }
+        public static double SingleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern,int i,int j)
+        {
+            var compareResult = 0d;//result
+            var speechUnit = speechPattern.Units[i];
+            var protoUnit = protocolPattern.Units[j];
+            if (protoUnit.IsVariable)
+            {
+                switch (protoUnit.TypeString)
                 {
-                    switch (protocolPattern.Units[i].TypeString)
-                    {
-                        case "anysimilar":
-                            compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
-                            commulative += compareResult;
-                            Console.WriteLine($"AnySimilar (VARIABLE): {compareResult}");
-                            break;
-                        default:
-                            Console.WriteLine($"Variable: 0");
-                            break;
-                    }
-
-                    continue;
-                }
-                switch (protocolPattern.Units[i].TypeString)
-                {
-                    case "common":
-                        compareResult = CommonUnitsCompare(speechPattern.Units[i].MorphInfo, protocolPattern.Units[i].Morph.First());
-                        commulative += compareResult;
-                        Console.WriteLine($"Common: {compareResult}");
-                        break;
-                    case "similar":
-                        compareResult = SimilarUnitsCompare(speechPattern.Units[i].MorphInfo, protocolPattern.Units[i].Morph.First());
-                        commulative += compareResult;
-                        Console.WriteLine($"Similar: {compareResult}");
-                        break;
-                    case "any":
-                        compareResult = AnyUnitsCompare(speechPattern.Units[i].MorphInfo, protocolPattern.Units[i].Morph);
-                        commulative += compareResult;
-                        Console.WriteLine($"Any: {compareResult}");
-                        break;
                     case "anysimilar":
                         compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
-                        commulative += compareResult;
-                        Console.WriteLine($"AnySimilar: {compareResult}");
+                        Console.WriteLine($"AnySimilar (VARIABLE): {compareResult}");
+                        break;
+                    default:
+                        Console.WriteLine($"Variable: 0");
                         break;
                 }
+                return compareResult;//exit
             }
-            Console.WriteLine($"CountRel: {countRel}");
-            return (commulative + countRel) / (protocolPattern.Units.Count+1)/*processedUnits*/;
+            //if isVariable -> doesn't continue
+            switch (protoUnit.TypeString)
+            {
+                case "common":
+                    compareResult = CommonUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First());
+                    Console.WriteLine($"Common: {compareResult}");
+                    break;
+                case "similar":
+                    compareResult = SimilarUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First());
+                    Console.WriteLine($"Similar: {compareResult}");
+                    break;
+                case "any":
+                    compareResult = AnyUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph);
+                    Console.WriteLine($"Any: {compareResult}");
+                    break;
+                case "anysimilar":
+                    compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
+                    Console.WriteLine($"AnySimilar: {compareResult}");
+                    break;
+            }
+            return compareResult;
         }
 
         private static double AnySimilarUnitsCompare(PSpeechPattern protocolPattern,SSpeechPattern speechPattern,int i)

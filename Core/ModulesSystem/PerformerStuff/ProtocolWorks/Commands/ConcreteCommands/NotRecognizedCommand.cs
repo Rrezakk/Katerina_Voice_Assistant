@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands.ConcreteCommands
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands.ConcreteCommands
 {
     public class NotRecognizedCommand:Command
     {

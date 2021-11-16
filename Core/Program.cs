@@ -20,7 +20,7 @@ namespace K3NA_Remastered_2
         public static readonly ProtocolsStorage ProtocolsStorage = new ProtocolsStorage();//automaticaly loades protocols
         public static readonly VariableStorage  GlobalVariables = new VariableStorage();//global variables storage
         public static readonly SubModulesContainer SubModules = new SubModulesContainer(new List<ISubModule>(){new CommandsExecutor()});
-        public static readonly ModulesContainer Modules = new ModulesContainer();
+        public static readonly ModulesContainer Modules = new ModulesContainer(/*new List<IModule>() { new SpeechModule(), new TestModule() }*/);
         
         public static void OnSpeech(string speech)
         {
@@ -70,11 +70,11 @@ namespace K3NA_Remastered_2
         }
         private static void Test()
         {
-            //var phrases = new List<string>() { "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
-            //foreach (var phrase in phrases)
-            //{
-            //    OnSpeech(phrase);
-            //}
+            var phrases = new List<string>() { "найди в интернете"/*,"привет обыватель","найди","привет тебе цветок"*/};
+            foreach (var phrase in phrases)
+            {
+                OnSpeech(phrase);
+            }
         }
         private static string Str(this string[] a) => string.Join(';', a);
         private static void Main(string[] args)

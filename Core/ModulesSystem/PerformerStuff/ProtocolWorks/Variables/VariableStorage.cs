@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
@@ -57,8 +58,85 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         }
         private static List<Variable> ExtractVariables(PSpeechPattern protocolPattern, SSpeechPattern speechPattern)
         {
+            var variableArr = new List<int>();
+            for (var i = 0; i < protocolPattern.Units.Count; i++)
+            {
+                if (protocolPattern.Units[i].IsVariable)
+                    variableArr.Add(i);
+            }
+
+            if (variableArr.Count==0)
+            {
+                return new List<Variable>();
+            }
+            else if (variableArr.Count == 1)
+            {
+                //three variants: var on first index or on last or on random in the middle
+                var index = variableArr[0];
+                if (index == 0)//single variable and positon is 0 index
+                {
+                    const double minRel = 49d;
+                    var markupArray = new double[protocolPattern.Units.Count];
+                    var acc = 0d;
+                    var maxRel = 0d;
+                    var maxIndex = -1;
+                    for (var i = protocolPattern.Units.Count - 1; i >= 0; i--)
+                    {
+                        var relevance = RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, i, i);
+                        var positiveIndex = i - protocolPattern.Units.Count + 1;
+                        markupArray[positiveIndex] = relevance;
+                        acc += relevance;
+                        if (acc/ positiveIndex > maxRel)
+                        {
+                            maxRel = acc / positiveIndex;
+                            maxIndex = positiveIndex;
+                        }
+
+                    }
+                    //var protoUnits = protocolPattern.Units;
+                    //var removedCount = 0;
+                    //for (int i = protoUnits.Count - 1; i >= 0; i--)
+                    //{
+                    //    var protoUnit = protoUnits[i];
+                    //    var relevanceList = new List<double>();
+                    //    for (int j = speechPattern.Units.Count - 1; j >= 0; j--)
+                    //    {
+                    //        var relevance = RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, j, i-removedCount);
+                    //        relevanceList.Add(relevance);
+                    //    }
+                    //    var maxrel = 0d;
+                    //    var maxRelIndex = 0;
+                    //    for (int j = 0; j < relevanceList.Count; j++)
+                    //    {
+                    //        if (relevanceList[j] > maxrel)
+                    //        {
+                    //            maxrel = relevanceList[j];
+                    //            maxRelIndex = j;
+                    //        }
+                    //    }
+
+                    //}
+                }
+                else if (index == protocolPattern.Units.Count)//single variable and positon is last index
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else if (variableArr.Count == 2)
+            {
+
+            }
+            else
+            {
+                return new List<Variable>();//not supported
+            }
+            //работает по схеме от краев к центру
             //throw new NotImplementedException();
-            return new List<Variable>();
+            
         }
         private void FillArguments(ref List<Command> commands)
         {
@@ -106,13 +184,15 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         }
         public void ExecuteRecognizedProtocol(Protocol protocol, SSpeechPattern speechPattern)
         {
+            Console.WriteLine($"SpeechPattern: {speechPattern.ToString()}");
+            Console.WriteLine($"ProtoPattern: {protocol.GetPattern().ToString()}");
             var variables = ExtractVariables(protocol.GetPattern(), speechPattern);//мы получили переменные
             foreach (var var in variables)
             {
                 this.SetVariable(var);//глупо, но с закосом на будущее
             }
             var commands = protocol.GetCommands();
-            this.FillArguments(ref commands);//вставляем переменные в аргументы
+            this.FillArguments(ref commands/*,this._variables*/);//вставляем переменные в аргументы
             var container = new CommandsContainer(commands,this,protocol.Name);//связываем
             Core.SubModules.CommandsExecutor().EnqueueNew(container); //выставляем команды в очередь на выполнение
         }

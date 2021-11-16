@@ -11,6 +11,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
     public class PSpeechUnit
     {
+        public string raw = "";
         public string VariableName;
         public string TypeString;
         public bool IsVariable = false;
@@ -19,6 +20,11 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
         public PSpeechUnit(string fillery)
         {
             Fill(fillery);
+        }
+
+        public override string ToString()
+        {
+            return $"[type: {TypeString} Raw: {raw}]";
         }
         //public List<string> MorphToStrings() => Morph.Select(m => m.BestTag.ToString()).ToList();
         //public List<string> TextStrings() => Morph.Select(m => m.Text).ToList();
@@ -32,6 +38,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
             //<word:similar:каланхоэ>
             //<word:anysimilar:завтра|сегодня|вчера|когда-нибудь>
             //слово
+            this.raw = unit;
             if (unit.Contains("<"))
             {
                 ProtocolsParser.ParseTripleUnit(unit, out var chema, out var type,

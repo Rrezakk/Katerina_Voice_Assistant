@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
     public class PSpeechPattern
     {
@@ -23,7 +21,14 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns
             {
                 ans[ptr++] = unit?.Morph?.First()?.BestTag?.Lemma;
             }
+
             return ans;
+        }
+
+        public override string ToString()
+        {
+            string s = Units.Aggregate("", (current, unit) => current + (unit.ToString() + " "));
+            return s;
         }
     }
 }

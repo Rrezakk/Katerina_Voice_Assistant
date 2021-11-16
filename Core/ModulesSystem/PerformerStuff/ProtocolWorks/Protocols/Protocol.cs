@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Commands;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
 {
     public abstract class Protocol
     {
