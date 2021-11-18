@@ -1,5 +1,16 @@
 ﻿Protocol:standard{
 Name{
+variables-test
+}
+Pattern{
+<var:singleWord:name> и другие и ещё света
+}
+Commands{
+ConsolePrint("<name>");
+}
+};
+Protocol:standard{
+Name{
 Hello world
 }
 Pattern{

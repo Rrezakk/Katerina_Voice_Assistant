@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Tables;

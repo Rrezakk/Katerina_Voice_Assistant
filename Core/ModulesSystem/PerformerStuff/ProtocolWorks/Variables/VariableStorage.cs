@@ -11,6 +11,20 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
     public class VariableStorage//динамический класс, создается в контексте распознанного протокола, в дальнейшем полностью переделать
     {
+        private class matrixElem
+        {
+            public matrixElem() { }
+
+            public matrixElem(int i, int j, double value)
+            {
+                this.line = i;
+                this.pos = j;
+                this.value = value;
+            }
+            public int line;
+            public int pos;
+            public double value;
+        }
         public VariableStorage()
         {
             _variables = new List<Variable>();
@@ -58,6 +72,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         }
         private static List<Variable> ExtractVariables(PSpeechPattern protocolPattern, SSpeechPattern speechPattern)
         {
+            Console.WriteLine("Extracting variables...");
             var variableArr = new List<int>();
             for (var i = 0; i < protocolPattern.Units.Count; i++)
             {
@@ -75,24 +90,103 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 var index = variableArr[0];
                 if (index == 0)//single variable and positon is 0 index
                 {
-                    const double minRel = 49d;
-                    var markupArray = new double[protocolPattern.Units.Count];
-                    var acc = 0d;
-                    var maxRel = 0d;
-                    var maxIndex = -1;
-                    for (var i = protocolPattern.Units.Count - 1; i >= 0; i--)
-                    {
-                        var relevance = RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, i, i);
-                        var positiveIndex = i - protocolPattern.Units.Count + 1;
-                        markupArray[positiveIndex] = relevance;
-                        acc += relevance;
-                        if (acc/ positiveIndex > maxRel)
-                        {
-                            maxRel = acc / positiveIndex;
-                            maxIndex = positiveIndex;
-                        }
+                    var matrix = new List<List<matrixElem>>();
+                    var matrix2 = new List<List<double>>();
 
+                    for (var i = 0; i < protocolPattern.Units.Count; i++)
+                    {
+                        var relTable = new List<matrixElem>();
+                        var reltable2 = new List<double>();
+                        var protoUnit = protocolPattern.Units[i];
+                        for (var j = 0; j < speechPattern.Units.Count; j++)
+                        {
+                            var speechUnit = speechPattern.Units[j];
+                            var relevanceElem =
+                                RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, j, i);
+                            relTable.Add(new matrixElem(i, j, relevanceElem));
+                            reltable2.Add(relevanceElem);
+                            relTable = relTable.OrderBy(d => -d.value).ToList();
+                        }
+                        matrix.Add(relTable);
+                        matrix2.Add(reltable2);
                     }
+                    Console.WriteLine("--------------------------");
+                    foreach (var line in matrix2)
+                    {
+                        foreach (var elem in line)
+                        {
+                            Console.Write("{0,6:F1}", elem);
+                        }
+                        Console.WriteLine();
+                    }
+                    Console.WriteLine("--------------------------");
+                    foreach (var line in matrix)
+                    {
+                        foreach (var elem in line)
+                        {
+                            Console.Write("{0,6:F1}",elem.value);
+                        }
+                        Console.WriteLine();
+                    }
+                    Console.WriteLine("--------------------------");
+                    var locked = new List<int>();//индексы уже подобранных элементов
+                    var map = new Dictionary<int, int>();//map for 
+                    foreach (var line in matrix)//lines: phrase
+                    {
+                        foreach (var elem in line)//elems: protocol elems
+                        {
+                            var f = false;
+                                foreach (var lelem in locked)
+                                {
+                                    if (lelem==elem.pos)
+                                    {
+                                        f = true;
+                                        break;
+                                    }
+                                }
+                                if (!f)
+                                {
+                                    map.Add(elem.line, elem.pos);
+                                    locked.Add(elem.pos);
+                                    break;
+                                }
+                        }
+                    }
+
+                    foreach (var elem in map)
+                    {
+                        Console.WriteLine($"{elem.Key} : {elem.Value}");
+                    }
+                    
+                    //var count = protocolPattern.Units.Count > speechPattern.Units.Count
+                    //    ? speechPattern.Units.Count
+                    //    : protocolPattern.Units.Count;
+                    //const double minRel = 49d;
+                    //var markupArray = new double[count];
+                    //var acc = 0d;
+                    //var maxRel = 0d;
+                    //var maxIndex = -1;
+                    //for (var i = count - 1; i >= 0; i--)
+                    //{
+                    //    var relevance = RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, i, i);
+                    //    var positiveIndex = count - i-1;
+                    //    markupArray[positiveIndex] = relevance;
+                    //    acc += relevance;
+                    //    if (acc/ (double)positiveIndex >= maxRel)
+                    //    {
+                    //        maxRel = acc /( (double)positiveIndex+1);
+                    //        maxIndex = positiveIndex;
+                    //    }
+
+                    //}
+
+                    //if (maxRel > minRel)
+                    //{
+                    //    Console.WriteLine(String.Join(' ',markupArray));
+                    //    Console.WriteLine($"MaxRel: {maxRel} index: {maxIndex}");
+                    //}
+
+
                     //var protoUnits = protocolPattern.Units;
                     //var removedCount = 0;
                     //for (int i = protoUnits.Count - 1; i >= 0; i--)
@@ -116,19 +210,20 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                     //    }
 
                     //}
+                    return new List<Variable>();
                 }
                 else if (index == protocolPattern.Units.Count)//single variable and positon is last index
                 {
-
+                    return new List<Variable>();
                 }
                 else
                 {
-
+                    return new List<Variable>();
                 }
             }
             else if (variableArr.Count == 2)
             {
-
+                return new List<Variable>();
             }
             else
             {

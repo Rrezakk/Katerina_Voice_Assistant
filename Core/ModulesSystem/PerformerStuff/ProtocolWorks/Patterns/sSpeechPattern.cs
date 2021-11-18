@@ -13,6 +13,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
             {
                 AddUnit(new SSpeechUnit(unit));
             }
+            Console.WriteLine(this);
         }
         public List<SSpeechUnit> Units { get; } = new List<SSpeechUnit>();
         public void AddUnit(SSpeechUnit unit)
