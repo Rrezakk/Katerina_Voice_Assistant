@@ -3,7 +3,7 @@ Name{
 variables-test
 }
 Pattern{
-<var:singleWord:name> и другие и ещё света
+<var:anysimilar.имя|я|мы|кирилл:name> и другие и ещё света
 }
 Commands{
 ConsolePrint("<name>");

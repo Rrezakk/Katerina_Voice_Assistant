@@ -11,39 +11,50 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
 {
     public class PSpeechUnit
     {
-        public string raw = "";
+        public string Raw = "";
         public string VariableName;
         public string TypeString;
         public bool IsVariable = false;
-        public List<MorphInfo> Morph;//https://github.com/lepeap/DeepMorphy/blob/master/gram.md
+        private List<MorphInfo> _morph;
+        public List<MorphInfo> Morph
+        {
+            get => _morph;
+            private set => _morph = value;
+        } //https://github.com/lepeap/DeepMorphy/blob/master/gram.md
         public PSpeechUnit(){}
         public PSpeechUnit(string fillery)
         {
             Fill(fillery);
         }
-
         public override string ToString()
         {
-            return $"[type: {TypeString} Raw: {raw}]";
+            return $"[type: {TypeString} Raw: {Raw}]";
         }
-        //public List<string> MorphToStrings() => Morph.Select(m => m.BestTag.ToString()).ToList();
-        //public List<string> TextStrings() => Morph.Select(m => m.Text).ToList();
-        //public List<string> LemmasStrings() => Morph.Select(m => m.BestTag.Lemma).ToList();
         public void Fill(string unit)
         {
-            //<word:any:привет|здорова|хеллоу>
             //<var:type:name>
-            //<var:anysimilar:завтра|сегодня|вчера|когда-нибудь>
+            //<var:anysimilar.завтра|сегодня|вчера|когда-нибудь:varname>
+            //<var:similar.имя:varname>
+            //<var:anysimilar.#LISTNAME_WList:varname>
+
+            ////<word:any:привет|здорова|хеллоу>
             //<word:morph:concretemorph>
             //<word:similar:каланхоэ>
             //<word:anysimilar:завтра|сегодня|вчера|когда-нибудь>
             //слово
-            this.raw = unit;
+            this.Raw = unit;
             if (unit.Contains("<"))
             {
                 ProtocolsParser.ParseTripleUnit(unit, out var chema, out var type,
                     out var text);
+                var container = "";//это аргументы для типов вроде anysimilar
                 TypeString = type;
+                if (type.Contains('.'))
+                {
+                    var dotIndex = type.IndexOf('.');
+                    TypeString = type.Substring(0, dotIndex);
+                    container = type.Substring(dotIndex + 1, type.Length - dotIndex - 1);
+                }
                 switch (chema)
                 {
                     case "var":
@@ -51,14 +62,16 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
                         IsVariable = true;
                         switch (TypeString)
                         {
+                                case "similar":
+                                    Morph = MorphAnalyzer.Parse(container).ToList();
+                                break;
                                 case "anysimilar":
-                                    Morph = AnySimilarProcessor(text);//в будущем добавить поддержку многословных эталонов
+                                    Morph = AnySimilarProcessor(container);//в будущем добавить поддержку многословных эталонов
                                     break;
                                 case "newType?Fuck!How to create it?!":
                                     break;
                         }
                         VariableName = text;
-                        Morph = null;//убрать заглушку
                         break;
                     }
                     case "word":
@@ -96,7 +109,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
         {
             if (text.StartsWith("#") && text.EndsWith("_WList"))
             {
-                throw new Exception("Under developement: [anysimilar: #NAME_WList] model");
+                throw new Exception("Under developement: [anysimilar.#NAME_WList] model");
             }
             else
             {

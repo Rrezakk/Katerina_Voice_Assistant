@@ -54,25 +54,26 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             Console.WriteLine($"CountRel: {countRel}");
             for (var i = 0; i < protoUnitsCount; i++)
             {
-                commulative += SingleRelevance(speechPattern, protocolPattern, i,i);
+                commulative += SingleRelevance(protocolPattern,speechPattern,i,i);
             }
             return (commulative + countRel) / (protocolPattern.Units.Count+1)/*processedUnits*/;
         }
-        public static double SingleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern,int i,int j)
+        public static double SingleRelevance(PSpeechPattern protocolPattern, SSpeechPattern speechPattern, int i,int j)
         {
             var compareResult = 0d;//result
-            var speechUnit = speechPattern.Units[i];
-            var protoUnit = protocolPattern.Units[j];
+            var speechUnit = speechPattern.Units[j];
+            var protoUnit = protocolPattern.Units[i];
+            Console.WriteLine($"Singlerelevance: {protoUnit.Raw} {speechUnit.Text}");
             if (protoUnit.IsVariable)
             {
                 switch (protoUnit.TypeString)
                 {
                     case "anysimilar":
-                        compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
-                        Console.WriteLine($"AnySimilar (VARIABLE): {compareResult}");
+                        compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
+                        Console.WriteLine($"AnySimilar (VARIABLE): {compareResult}"); /*for: {protoUnit.Raw} {speechUnit.Text}*/
                         break;
                     case "singleWord":
-                        compareResult = SingleWordCompare(protocolPattern, speechPattern, i);
+                        compareResult = SingleWordCompare(protocolPattern, speechPattern, i,j);
                         Console.WriteLine($"SingleWord (VARIABLE): {compareResult}");
                         break;
                     default:
@@ -97,16 +98,16 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                     Console.WriteLine($"Any: {compareResult}");
                     break;
                 case "anysimilar":
-                    compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i);
+                    compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
                     Console.WriteLine($"AnySimilar: {compareResult}");
                     break;
             }
             return compareResult;
         }
 
-        private static double SingleWordCompare(PSpeechPattern proto,SSpeechPattern speech,int i)
+        private static double SingleWordCompare(PSpeechPattern proto,SSpeechPattern speech,int i,int j)
         {
-            var len = speech.Units[i].MorphInfo.Text.Length;
+            var len = speech.Units[j].MorphInfo.Text.Length;
             if (len <= 3)
             {
                 return 1d;
@@ -121,18 +122,18 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             }
         }
 
-        private static double AnySimilarUnitsCompare(PSpeechPattern protocolPattern,SSpeechPattern speechPattern,int i)
+        private static double AnySimilarUnitsCompare(PSpeechPattern protocolPattern,SSpeechPattern speechPattern,int i,int j)
         {
             var u = new double[protocolPattern.Units[i].Morph.Count];
             var max = 0d;
             var maxIndex = 0;
-            for (var j = 0; j < u.Length; j++)
+            for (var index = 0; index < u.Length; index++)
             {
-                u[j] = SimilarUnitsCompare(speechPattern.Units[i].MorphInfo,
-                    protocolPattern.Units[i].Morph[j]);
-                if (!(u[j] > max)) continue;
-                max = u[j];
-                maxIndex = j;
+                u[index] = SimilarUnitsCompare(speechPattern.Units[j].MorphInfo,
+                    protocolPattern.Units[i].Morph[index]);
+                if (!(u[index] > max)) continue;
+                max = u[index];
+                maxIndex = index;
             }
             return  u[maxIndex];
         }
@@ -158,9 +159,10 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         {
             var st = CutBestTag(speech.BestTag).Split(',');
             var pt = CutBestTag(proto.BestTag).Split(',');
-            var acc = pt.Where((t1, i) => st.Any(t => t1 == st[i])).Count();//causes crash at si
+            var positive = st.Count(speechTag => pt.Any(protocolTag => speechTag == protocolTag));
+            //var acc = pt.Where((t1, i) => st.Any(t => t1 == st[i])).Count();//causes crash at si
             //Console.WriteLine($"{speech.BestTag} {proto.BestTag} {acc} {pt.Length} {(double)acc /pt.Length*100d}");
-            return ((double)acc / (double)pt.Length) * 100d;
+            return ((double)positive / (double)pt.Length) * 100d;
         }
         private static string Currentword(string currentword)
         {
@@ -173,7 +175,8 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         private static string CutBestTag(Tag tag)
         {
             var index = tag.ToString().IndexOf("Tags:", StringComparison.Ordinal) + "Tags:".Length;
-            return tag.ToString().Substring(index, tag.ToString().Length - index).Trim(' ');
+            var result = tag.ToString().Substring(index, tag.ToString().Length - index).Trim(' ');
+            return result ?? "";
         }
         private static double Lemmatic(string[] speechLemma, string[] patternLemma)
         {

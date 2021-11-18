@@ -70,7 +70,7 @@ namespace K3NA_Remastered_2
         }
         private static void Test()
         {
-            var phrases = new List<string>() { "Алёнка и другие и"/*,"привет обыватель","найди","привет тебе цветок"*/};
+            var phrases = new List<string>() { "Алёнка и другие и я"/*,"привет обыватель","найди","привет тебе цветок"*/};
             foreach (var phrase in phrases)
             {
                 OnSpeech(phrase);

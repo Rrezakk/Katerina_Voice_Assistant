@@ -15,10 +15,10 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         {
             public matrixElem() { }
 
-            public matrixElem(int i, int j, double value)
+            public matrixElem(int line, int pos, double value)
             {
-                this.line = i;
-                this.pos = j;
+                this.line = line;
+                this.pos = pos;
                 this.value = value;
             }
             public int line;
@@ -93,16 +93,16 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                     var matrix = new List<List<matrixElem>>();
                     var matrix2 = new List<List<double>>();
 
-                    for (var i = 0; i < protocolPattern.Units.Count; i++)
+                    for (var i = 0; i < protocolPattern.Units.Count; i++)//line is single protocol unit
                     {
                         var relTable = new List<matrixElem>();
                         var reltable2 = new List<double>();
                         var protoUnit = protocolPattern.Units[i];
-                        for (var j = 0; j < speechPattern.Units.Count; j++)
+                        for (var j = 0; j < speechPattern.Units.Count; j++)//pos in line is speechunit
                         {
                             var speechUnit = speechPattern.Units[j];
                             var relevanceElem =
-                                RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, j, i);
+                                RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j);
                             relTable.Add(new matrixElem(i, j, relevanceElem));
                             reltable2.Add(relevanceElem);
                             relTable = relTable.OrderBy(d => -d.value).ToList();
@@ -135,27 +135,18 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                     {
                         foreach (var elem in line)//elems: protocol elems
                         {
-                            var f = false;
-                                foreach (var lelem in locked)
-                                {
-                                    if (lelem==elem.pos)
-                                    {
-                                        f = true;
-                                        break;
-                                    }
-                                }
-                                if (!f)
-                                {
-                                    map.Add(elem.line, elem.pos);
-                                    locked.Add(elem.pos);
-                                    break;
-                                }
+                            var f = locked.Any(lelem => lelem == elem.pos);
+                            if (f) continue;
+                            map.Add(elem.line, elem.pos);
+                            locked.Add(elem.pos);
+                            break;
                         }
                     }
 
                     foreach (var elem in map)
                     {
-                        Console.WriteLine($"{elem.Key} : {elem.Value}");
+                        var matrixelem = matrix2[elem.Key][elem.Value];
+                        Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
                     }
                     
                     //var count = protocolPattern.Units.Count > speechPattern.Units.Count

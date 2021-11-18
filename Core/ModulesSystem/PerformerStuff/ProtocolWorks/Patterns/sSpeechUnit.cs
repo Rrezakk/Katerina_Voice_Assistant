@@ -18,8 +18,8 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns
         }
         public SSpeechUnit(string unit)
         {
-            this.MorphInfo = Core.MorphAnalyzer.Parse(new string[] {unit}).First();
-            this.Lemma = MorphInfo.BestTag.Lemma;
+            this.MorphInfo = Core.MorphAnalyzer.Parse(new[] { unit }).First();
+            this.Lemma = MorphInfo != null ? MorphInfo.BestTag.Lemma : "";
             this.Text = unit;
         }
         public override string ToString()
