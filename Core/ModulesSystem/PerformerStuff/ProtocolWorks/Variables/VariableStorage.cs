@@ -9,6 +9,7 @@ using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
@@ -93,36 +94,33 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 var index = variableArr[0];
                 if (index == 0)//single variable and positon is 0 index
                 {
-                    var matrix = new List<List<matrixElem>>();
-                    var matrix2 = new List<List<double>>();
-
-                    for (var i = 0; i < protocolPattern.Units.Count; i++)//line is single protocol unit
+                    var matrix = new List<List<matrixElem>>();//матрица перестановок (сортировки)
+                    var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
+                    var relevanceArray = new double[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
+                    for (var i = 0; i < protocolPattern.Units.Count; i++)
                     {
-                        var relTable = new List<matrixElem>();
-                        var reltable2 = new List<double>();
-                        var protoUnit = protocolPattern.Units[i];
-                        for (var j = 0; j < speechPattern.Units.Count; j++)//pos in line is speechunit
+                        for (var j = 0; j < speechPattern.Units.Count; j++)
                         {
-                            var speechUnit = speechPattern.Units[j];
                             var relevanceElem =
                                 RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j);
-                            relTable.Add(new matrixElem(i, j, relevanceElem));
-                            reltable2.Add(relevanceElem);
-                            relTable = relTable.OrderBy(d => -d.value).ToList();
+                            relevanceArray[i, j] = relevanceElem;
                         }
-                        matrix.Add(relTable);
-                        matrix2.Add(reltable2);
-                    }
-                    Console.WriteLine("--------------------------");
-                    foreach (var line in matrix2)
+                    }//заполняем массив релевантностью пар
+                    var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
+                    Console.WriteLine(mtrx);//визуализация релевантности
+                    Console.WriteLine(exponentialDiagonalicMatrix*100);//визуализация сомножителя
+                    mtrx = mtrx * exponentialDiagonalicMatrix;//умножение
+                    Console.WriteLine(mtrx);//визуализация обработанной релевантности
+
+                    for (var i = 0; i < mtrx.RowsCount; i++)
                     {
-                        foreach (var elem in line)
+                        var relTable = new List<matrixElem>();
+                        for (var j = 0; j < mtrx.ColumnsCount; j++)
                         {
-                            Console.Write("{0,6:F1}", elem);
+                            relTable.Add(new matrixElem(i, j, mtrx.InnerDoubles[i,j]));
                         }
-                        Console.WriteLine();
+                        matrix.Add(relTable.OrderBy(d => -d.value).ToList());
                     }
-                    Console.WriteLine("--------------------------");
                     foreach (var line in matrix)
                     {
                         foreach (var elem in line)
@@ -131,33 +129,24 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                         }
                         Console.WriteLine();
                     }
-                    Console.WriteLine("--------------------------");
-                    var locked = new List<int>();//индексы уже подобранных элементов
-                    var map = new Dictionary<int, int>();//map for 
-                    foreach (var line in matrix)//lines: phrase
-                    {
-                        foreach (var elem in line)//elems: protocol elems
-                        {
-                            var f = locked.Any(lelem => lelem == elem.pos);
-                            if (f) continue;
-                            map.Add(elem.line, elem.pos);
-                            locked.Add(elem.pos);
-                            break;
-                        }
-                    }
-
-                    foreach (var elem in map)
-                    {
-                        var matrixelem = matrix2[elem.Key][elem.Value];
-                        Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
-                    }
-
-                    var arr = new List<double>() {100,100,100,100,100}/*{0, 100, 75.3, 42.2, 20}*/;
-                    var max = arr.Max();
-                    for (int i = 0; i < arr.Count; i++)
-                    {
-                        Console.WriteLine($"{ApplyDifficulty(arr[i],max,i)}");
-                    }
+                    //var locked = new List<int>();//индексы уже подобранных элементов
+                    //var map = new Dictionary<int, int>();//map for 
+                    //foreach (var line in matrix)//lines: phrase
+                    //{
+                    //    foreach (var elem in line)//elems: protocol elems
+                    //    {
+                    //        var f = locked.Any(lelem => lelem == elem.pos);
+                    //        if (f) continue;
+                    //        map.Add(elem.line, elem.pos);
+                    //        locked.Add(elem.pos);
+                    //        break;
+                    //    }
+                    //}
+                    //foreach (var elem in map)
+                    //{
+                    //    var matrixelem = mtrx.InnerDoubles[elem.Key,elem.Value];
+                    //    Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
+                    //}
                     return new List<Variable>();
                 }
                 else if (index == protocolPattern.Units.Count)//single variable and positon is last index
@@ -238,17 +227,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             this.FillArguments(ref commands/*,this._variables*/);//вставляем переменные в аргументы
             var container = new CommandsContainer(commands,this,protocol.Name);//связываем
             Core.SubModules.CommandsExecutor().EnqueueNew(container); //выставляем команды в очередь на выполнение
-        }
-        private static double NormalizeByMax(double value, double max)
-        {
-            return Math.Round(value / max, 1);
-        }
-
-        private static double ApplyDifficulty(double value, double maxValue, int ptr)
-        {
-            var difficulty = /*1d * Math.Sqrt(ptr + 1);*/ /*Math.E Math.Pow()*/1;
-            var elem = (1d / difficulty) * value;
-            return NormalizeByMax(elem, maxValue) * 100;
         }
     }
 }
