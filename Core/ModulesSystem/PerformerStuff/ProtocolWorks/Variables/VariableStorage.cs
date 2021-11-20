@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
@@ -148,59 +151,13 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                         var matrixelem = matrix2[elem.Key][elem.Value];
                         Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
                     }
-                    
-                    //var count = protocolPattern.Units.Count > speechPattern.Units.Count
-                    //    ? speechPattern.Units.Count
-                    //    : protocolPattern.Units.Count;
-                    //const double minRel = 49d;
-                    //var markupArray = new double[count];
-                    //var acc = 0d;
-                    //var maxRel = 0d;
-                    //var maxIndex = -1;
-                    //for (var i = count - 1; i >= 0; i--)
-                    //{
-                    //    var relevance = RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, i, i);
-                    //    var positiveIndex = count - i-1;
-                    //    markupArray[positiveIndex] = relevance;
-                    //    acc += relevance;
-                    //    if (acc/ (double)positiveIndex >= maxRel)
-                    //    {
-                    //        maxRel = acc /( (double)positiveIndex+1);
-                    //        maxIndex = positiveIndex;
-                    //    }
 
-                    //}
-
-                    //if (maxRel > minRel)
-                    //{
-                    //    Console.WriteLine(String.Join(' ',markupArray));
-                    //    Console.WriteLine($"MaxRel: {maxRel} index: {maxIndex}");
-                    //}
-
-
-                    //var protoUnits = protocolPattern.Units;
-                    //var removedCount = 0;
-                    //for (int i = protoUnits.Count - 1; i >= 0; i--)
-                    //{
-                    //    var protoUnit = protoUnits[i];
-                    //    var relevanceList = new List<double>();
-                    //    for (int j = speechPattern.Units.Count - 1; j >= 0; j--)
-                    //    {
-                    //        var relevance = RelevanceAnalyzer.SingleRelevance(speechPattern, protocolPattern, j, i-removedCount);
-                    //        relevanceList.Add(relevance);
-                    //    }
-                    //    var maxrel = 0d;
-                    //    var maxRelIndex = 0;
-                    //    for (int j = 0; j < relevanceList.Count; j++)
-                    //    {
-                    //        if (relevanceList[j] > maxrel)
-                    //        {
-                    //            maxrel = relevanceList[j];
-                    //            maxRelIndex = j;
-                    //        }
-                    //    }
-
-                    //}
+                    var arr = new List<double>() {100,100,100,100,100}/*{0, 100, 75.3, 42.2, 20}*/;
+                    var max = arr.Max();
+                    for (int i = 0; i < arr.Count; i++)
+                    {
+                        Console.WriteLine($"{ApplyDifficulty(arr[i],max,i)}");
+                    }
                     return new List<Variable>();
                 }
                 else if (index == protocolPattern.Units.Count)//single variable and positon is last index
@@ -281,6 +238,17 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             this.FillArguments(ref commands/*,this._variables*/);//вставляем переменные в аргументы
             var container = new CommandsContainer(commands,this,protocol.Name);//связываем
             Core.SubModules.CommandsExecutor().EnqueueNew(container); //выставляем команды в очередь на выполнение
+        }
+        private static double NormalizeByMax(double value, double max)
+        {
+            return Math.Round(value / max, 1);
+        }
+
+        private static double ApplyDifficulty(double value, double maxValue, int ptr)
+        {
+            var difficulty = /*1d * Math.Sqrt(ptr + 1);*/ /*Math.E Math.Pow()*/1;
+            var elem = (1d / difficulty) * value;
+            return NormalizeByMax(elem, maxValue) * 100;
         }
     }
 }
