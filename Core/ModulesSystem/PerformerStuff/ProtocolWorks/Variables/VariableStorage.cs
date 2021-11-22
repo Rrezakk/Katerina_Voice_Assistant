@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
@@ -18,16 +14,15 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         private class MatrixElem
         {
             public MatrixElem() { }
-
             public MatrixElem(int line, int pos, float value)
             {
-                this.line = line;
-                this.pos = pos;
-                this.value = value;
+                this.Line = line;
+                this.Pos = pos;
+                this.Value = value;
             }
-            public int line;
-            public int pos;
-            public float value;
+            public int Line;
+            public int Pos;
+            public float Value;
         }
         public VariableStorage()
         {
@@ -100,47 +95,34 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 {
                     relTable.Add(new MatrixElem(i, j, mtrx.Innerfloats[i, j]));
                 }
-                matrix.Add(relTable.OrderBy(d => -d.value).ToList());
+                matrix.Add(relTable.OrderBy(d => -d.Value).ToList());
             }//заполнение матрицы сортировки
-
             foreach (var line in matrix)
             {
                 foreach (var elem in line)
                 {
-                    Console.Write("{0,6:F1}", elem.value);
+                    Console.Write("{0,6:F1}", elem.Value);
                 }
                 Console.WriteLine();
-            }
-            //Console.WriteLine();
-            //foreach (var line in matrix)
-            //{
-            //    foreach (var elem in line)
-            //    {
-            //        Console.Write("{0,3:D}", elem.pos);
-            //    }
-            //    Console.WriteLine();
-            //}
-
-            var minRelevance = Math.Round(5f * Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix),2);
+            }//вывод матрицы сортировки
+            var minRelevance = Math.Round(5f * Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix),2);//минимальная релевантность
             Console.WriteLine($"Min relevance: {minRelevance}");
             var map = new Dictionary<int,int>();//pattern unit -> speech unit map
-            var errorMap = new Dictionary<int,string>();
+            var errorMap = new Dictionary<int,string>();//pattern unit -> empty string                                                  later will be       ####int[]
             for (var i = 0; i < matrix.Count; i++)
             {
                 var lineElements = matrix[i]; //find max in line, excluding low relevant and already used
-                foreach (var t in lineElements.Where(t => !map.ContainsKey(t.pos)))
+                foreach (var t in lineElements.Where(t => !map.ContainsKey(t.Pos)))
                 {
-                    if (t.value < minRelevance)
+                    if (t.Value < minRelevance)
                         errorMap.Add(i, "");
                     else
                     {
-                        map.Add(i, t.pos);
+                        map.Add(i, t.Pos);
                         break;
                     }
                 }
-            }
-
-            string empty = "";
+            }//mapping
             foreach (var (key, value) in map)
             {
                 Console.WriteLine($"{key} -> {value}");

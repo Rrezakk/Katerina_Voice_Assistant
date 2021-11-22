@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
@@ -20,9 +19,9 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
             RowsCount = rows;
             ColumnsCount = cols;
         }
-        public float[,] Innerfloats { get; set; }
-        public int RowsCount { get; set; }
-        public int ColumnsCount { get; set; }
+        public float[,] Innerfloats { get;}
+        public int RowsCount { get;}
+        public int ColumnsCount { get;}
         public bool IsSquare()
         {
             return ColumnsCount == RowsCount;
