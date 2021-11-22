@@ -15,11 +15,11 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
     public class VariableStorage//динамический класс, создается в контексте распознанного протокола, в дальнейшем полностью переделать
     {
-        private class matrixElem
+        private class MatrixElem
         {
-            public matrixElem() { }
+            public MatrixElem() { }
 
-            public matrixElem(int line, int pos, double value)
+            public MatrixElem(int line, int pos, float value)
             {
                 this.line = line;
                 this.pos = pos;
@@ -27,7 +27,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             }
             public int line;
             public int pos;
-            public double value;
+            public float value;
         }
         public VariableStorage()
         {
@@ -77,15 +77,14 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         private static List<Variable> ExtractVariables(PSpeechPattern protocolPattern, SSpeechPattern speechPattern)
         {
             Console.WriteLine("Extracting variables...");
-            var matrix = new List<List<matrixElem>>();//матрица перестановок (сортировки)
+            var matrix = new List<List<MatrixElem>>();//матрица перестановок (сортировки)
             var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
-            var relevanceArray = new double[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
+            var relevanceArray = new float[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
             for (var i = 0; i < protocolPattern.Units.Count; i++)
             {
                 for (var j = 0; j < speechPattern.Units.Count; j++)
                 {
-                    var relevanceElem =
-                        RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j);
+                    var relevanceElem =(float)Math.Round(RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j),2);
                     relevanceArray[i, j] = relevanceElem;
                 }
             }//заполняем массив релевантностью пар
@@ -96,10 +95,10 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             Console.WriteLine(mtrx);//визуализация обработанной релевантности
             for (var i = 0; i < mtrx.RowsCount; i++)
             {
-                var relTable = new List<matrixElem>();
+                var relTable = new List<MatrixElem>();
                 for (var j = 0; j < mtrx.ColumnsCount; j++)
                 {
-                    relTable.Add(new matrixElem(i, j, mtrx.InnerDoubles[i, j]));
+                    relTable.Add(new MatrixElem(i, j, mtrx.Innerfloats[i, j]));
                 }
                 matrix.Add(relTable.OrderBy(d => -d.value).ToList());
             }//заполнение матрицы сортировки
@@ -112,92 +111,50 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine();
-            foreach (var line in matrix)
-            {
-                foreach (var elem in line)
-                {
-                    Console.Write("{0,3:D}", elem.pos);
-                }
-                Console.WriteLine();
-            }
+            //Console.WriteLine();
+            //foreach (var line in matrix)
+            //{
+            //    foreach (var elem in line)
+            //    {
+            //        Console.Write("{0,3:D}", elem.pos);
+            //    }
+            //    Console.WriteLine();
+            //}
 
-            double minRelevance = 5d* Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix);
+            var minRelevance = Math.Round(5f * Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix),2);
             Console.WriteLine($"Min relevance: {minRelevance}");
             var map = new Dictionary<int,int>();//pattern unit -> speech unit map
+            var errorMap = new Dictionary<int,string>();
             for (var i = 0; i < matrix.Count; i++)
             {
-                var lineElements = matrix[i];//find max in line, excluding low relevant and already used
+                var lineElements = matrix[i]; //find max in line, excluding low relevant and already used
                 foreach (var t in lineElements.Where(t => !map.ContainsKey(t.pos)))
                 {
-                    if (t.value < minRelevance) continue;
-                    map.Add(i, t.pos);
-                    break;
+                    if (t.value < minRelevance)
+                        errorMap.Add(i, "");
+                    else
+                    {
+                        map.Add(i, t.pos);
+                        break;
+                    }
                 }
             }
 
-            foreach (var elem in map)
+            string empty = "";
+            foreach (var (key, value) in map)
             {
-                Console.WriteLine($"{elem.Key} -> {elem.Value}");
+                Console.WriteLine($"{key} -> {value}");
             }
+            foreach (var (key, value) in map)
+            {
+                Console.WriteLine($"{protocolPattern.Units[key]} -> \"{speechPattern.Units[value]}\"");
+            }
+            foreach (var (key, value) in errorMap)
+            {
+                Console.WriteLine($"{protocolPattern.Units[key]} -> \"{value}\"");
+            }
+            
             return new List<Variable>();
-            //var variableArr = new List<int>();
-            //for (var i = 0; i < protocolPattern.Units.Count; i++)
-            //{
-            //    if (protocolPattern.Units[i].IsVariable)
-            //        variableArr.Add(i);
-            //}
-
-            //if (variableArr.Count==0)
-            //{
-            //    return new List<Variable>();
-            //}
-            //else if (variableArr.Count == 1)
-            //{
-            //    //three variants: var on first index or on last or on random in the middle
-            //    var index = variableArr[0];
-            //    if (index == 0)//single variable and positon is 0 index
-            //    {
-
-            //        //var locked = new List<int>();//индексы уже подобранных элементов
-            //        //var map = new Dictionary<int, int>();//map for 
-            //        //foreach (var line in matrix)//lines: phrase
-            //        //{
-            //        //    foreach (var elem in line)//elems: protocol elems
-            //        //    {
-            //        //        var f = locked.Any(lelem => lelem == elem.pos);
-            //        //        if (f) continue;
-            //        //        map.Add(elem.line, elem.pos);
-            //        //        locked.Add(elem.pos);
-            //        //        break;
-            //        //    }
-            //        //}
-            //        //foreach (var elem in map)
-            //        //{
-            //        //    var matrixelem = mtrx.InnerDoubles[elem.Key,elem.Value];
-            //        //    Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
-            //        //}
-            //        return new List<Variable>();
-            //    }
-            //    else if (index == protocolPattern.Units.Count)//single variable and positon is last index
-            //    {
-            //        return new List<Variable>();
-            //    }
-            //    else
-            //    {
-            //        return new List<Variable>();
-            //    }
-            //}
-            //else if (variableArr.Count == 2)
-            //{
-            //    return new List<Variable>();
-            //}
-            //else
-            //{
-            //    return new List<Variable>();//not supported
-            //}
-            //работает по схеме от краев к центру
-            //throw new NotImplementedException();
         }
         private void FillArguments(ref List<Command> commands)
         {
