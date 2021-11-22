@@ -116,5 +116,13 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
             }
             return doubles;
         });
+        public static double GetMinForExponentialDiagonalic(Matrix m)
+        {
+            return m.InnerDoubles[0, m.ColumnsCount - 1];
+        }
+        public static double GetMaxForExponentialDiagonalic(Matrix m)
+        {
+            return m.InnerDoubles[0, 0];
+        }
     }
 }

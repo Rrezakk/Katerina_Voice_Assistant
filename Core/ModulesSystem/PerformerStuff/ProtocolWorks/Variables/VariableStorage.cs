@@ -77,98 +77,127 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
         private static List<Variable> ExtractVariables(PSpeechPattern protocolPattern, SSpeechPattern speechPattern)
         {
             Console.WriteLine("Extracting variables...");
-            var variableArr = new List<int>();
+            var matrix = new List<List<matrixElem>>();//матрица перестановок (сортировки)
+            var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
+            var relevanceArray = new double[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
             for (var i = 0; i < protocolPattern.Units.Count; i++)
             {
-                if (protocolPattern.Units[i].IsVariable)
-                    variableArr.Add(i);
+                for (var j = 0; j < speechPattern.Units.Count; j++)
+                {
+                    var relevanceElem =
+                        RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j);
+                    relevanceArray[i, j] = relevanceElem;
+                }
+            }//заполняем массив релевантностью пар
+            var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
+            Console.WriteLine(mtrx);//визуализация релевантности
+            Console.WriteLine(exponentialDiagonalicMatrix * 100);//визуализация сомножителя
+            mtrx = mtrx * exponentialDiagonalicMatrix;//умножение
+            Console.WriteLine(mtrx);//визуализация обработанной релевантности
+            for (var i = 0; i < mtrx.RowsCount; i++)
+            {
+                var relTable = new List<matrixElem>();
+                for (var j = 0; j < mtrx.ColumnsCount; j++)
+                {
+                    relTable.Add(new matrixElem(i, j, mtrx.InnerDoubles[i, j]));
+                }
+                matrix.Add(relTable.OrderBy(d => -d.value).ToList());
+            }//заполнение матрицы сортировки
+
+            foreach (var line in matrix)
+            {
+                foreach (var elem in line)
+                {
+                    Console.Write("{0,6:F1}", elem.value);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+            foreach (var line in matrix)
+            {
+                foreach (var elem in line)
+                {
+                    Console.Write("{0,3:D}", elem.pos);
+                }
+                Console.WriteLine();
             }
 
-            if (variableArr.Count==0)
+            double minRelevance = 5d* Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix);
+            Console.WriteLine($"Min relevance: {minRelevance}");
+            var map = new Dictionary<int,int>();//pattern unit -> speech unit map
+            for (var i = 0; i < matrix.Count; i++)
             {
-                return new List<Variable>();
-            }
-            else if (variableArr.Count == 1)
-            {
-                //three variants: var on first index or on last or on random in the middle
-                var index = variableArr[0];
-                if (index == 0)//single variable and positon is 0 index
+                var lineElements = matrix[i];//find max in line, excluding low relevant and already used
+                foreach (var t in lineElements.Where(t => !map.ContainsKey(t.pos)))
                 {
-                    var matrix = new List<List<matrixElem>>();//матрица перестановок (сортировки)
-                    var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
-                    var relevanceArray = new double[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
-                    for (var i = 0; i < protocolPattern.Units.Count; i++)
-                    {
-                        for (var j = 0; j < speechPattern.Units.Count; j++)
-                        {
-                            var relevanceElem =
-                                RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j);
-                            relevanceArray[i, j] = relevanceElem;
-                        }
-                    }//заполняем массив релевантностью пар
-                    var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
-                    Console.WriteLine(mtrx);//визуализация релевантности
-                    Console.WriteLine(exponentialDiagonalicMatrix*100);//визуализация сомножителя
-                    mtrx = mtrx * exponentialDiagonalicMatrix;//умножение
-                    Console.WriteLine(mtrx);//визуализация обработанной релевантности
+                    if (t.value < minRelevance) continue;
+                    map.Add(i, t.pos);
+                    break;
+                }
+            }
 
-                    for (var i = 0; i < mtrx.RowsCount; i++)
-                    {
-                        var relTable = new List<matrixElem>();
-                        for (var j = 0; j < mtrx.ColumnsCount; j++)
-                        {
-                            relTable.Add(new matrixElem(i, j, mtrx.InnerDoubles[i,j]));
-                        }
-                        matrix.Add(relTable.OrderBy(d => -d.value).ToList());
-                    }
-                    foreach (var line in matrix)
-                    {
-                        foreach (var elem in line)
-                        {
-                            Console.Write("{0,6:F1}",elem.value);
-                        }
-                        Console.WriteLine();
-                    }
-                    //var locked = new List<int>();//индексы уже подобранных элементов
-                    //var map = new Dictionary<int, int>();//map for 
-                    //foreach (var line in matrix)//lines: phrase
-                    //{
-                    //    foreach (var elem in line)//elems: protocol elems
-                    //    {
-                    //        var f = locked.Any(lelem => lelem == elem.pos);
-                    //        if (f) continue;
-                    //        map.Add(elem.line, elem.pos);
-                    //        locked.Add(elem.pos);
-                    //        break;
-                    //    }
-                    //}
-                    //foreach (var elem in map)
-                    //{
-                    //    var matrixelem = mtrx.InnerDoubles[elem.Key,elem.Value];
-                    //    Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
-                    //}
-                    return new List<Variable>();
-                }
-                else if (index == protocolPattern.Units.Count)//single variable and positon is last index
-                {
-                    return new List<Variable>();
-                }
-                else
-                {
-                    return new List<Variable>();
-                }
-            }
-            else if (variableArr.Count == 2)
+            foreach (var elem in map)
             {
-                return new List<Variable>();
+                Console.WriteLine($"{elem.Key} -> {elem.Value}");
             }
-            else
-            {
-                return new List<Variable>();//not supported
-            }
+            return new List<Variable>();
+            //var variableArr = new List<int>();
+            //for (var i = 0; i < protocolPattern.Units.Count; i++)
+            //{
+            //    if (protocolPattern.Units[i].IsVariable)
+            //        variableArr.Add(i);
+            //}
+
+            //if (variableArr.Count==0)
+            //{
+            //    return new List<Variable>();
+            //}
+            //else if (variableArr.Count == 1)
+            //{
+            //    //three variants: var on first index or on last or on random in the middle
+            //    var index = variableArr[0];
+            //    if (index == 0)//single variable and positon is 0 index
+            //    {
+
+            //        //var locked = new List<int>();//индексы уже подобранных элементов
+            //        //var map = new Dictionary<int, int>();//map for 
+            //        //foreach (var line in matrix)//lines: phrase
+            //        //{
+            //        //    foreach (var elem in line)//elems: protocol elems
+            //        //    {
+            //        //        var f = locked.Any(lelem => lelem == elem.pos);
+            //        //        if (f) continue;
+            //        //        map.Add(elem.line, elem.pos);
+            //        //        locked.Add(elem.pos);
+            //        //        break;
+            //        //    }
+            //        //}
+            //        //foreach (var elem in map)
+            //        //{
+            //        //    var matrixelem = mtrx.InnerDoubles[elem.Key,elem.Value];
+            //        //    Console.WriteLine($"L:{elem.Key} : P:{elem.Value} -> {matrixelem} ");
+            //        //}
+            //        return new List<Variable>();
+            //    }
+            //    else if (index == protocolPattern.Units.Count)//single variable and positon is last index
+            //    {
+            //        return new List<Variable>();
+            //    }
+            //    else
+            //    {
+            //        return new List<Variable>();
+            //    }
+            //}
+            //else if (variableArr.Count == 2)
+            //{
+            //    return new List<Variable>();
+            //}
+            //else
+            //{
+            //    return new List<Variable>();//not supported
+            //}
             //работает по схеме от краев к центру
             //throw new NotImplementedException();
-            
         }
         private void FillArguments(ref List<Command> commands)
         {

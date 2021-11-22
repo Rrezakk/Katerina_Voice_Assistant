@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define Print_Percentage//used for enabling console output for debugging
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeepMorphy.Model;
@@ -63,21 +65,21 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             var compareResult = 0d;//result
             var speechUnit = speechPattern.Units[j];
             var protoUnit = protocolPattern.Units[i];
-            Console.WriteLine($"Singlerelevance: {protoUnit.Raw} {speechUnit.Text}");
+            PrintRelevance($"Singlerelevance: {protoUnit.Raw} {speechUnit.Text}");
             if (protoUnit.IsVariable)
             {
                 switch (protoUnit.TypeString)
                 {
                     case "anysimilar":
                         compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
-                        Console.WriteLine($"AnySimilar (VARIABLE): {compareResult}"); /*for: {protoUnit.Raw} {speechUnit.Text}*/
+                        PrintRelevance($"AnySimilar (VARIABLE): {compareResult}"); /*for: {protoUnit.Raw} {speechUnit.Text}*/
                         break;
                     case "singleWord":
                         compareResult = SingleWordCompare(protocolPattern, speechPattern, i,j);
-                        Console.WriteLine($"SingleWord (VARIABLE): {compareResult}");
+                        PrintRelevance($"SingleWord (VARIABLE): {compareResult}");
                         break;
                     default:
-                        Console.WriteLine($"Variable: 0");
+                        PrintRelevance($"Unknown variable type: 0");
                         break;
                 }
                 return compareResult;//exit
@@ -87,24 +89,29 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             {
                 case "common":
                     compareResult = CommonUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First());
-                    Console.WriteLine($"Common: {compareResult}");
+                    PrintRelevance($"Common: {compareResult}");
                     break;
                 case "similar":
                     compareResult = SimilarUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First());
-                    Console.WriteLine($"Similar: {compareResult}");
+                    PrintRelevance($"Similar: {compareResult}");
                     break;
                 case "any":
                     compareResult = AnyUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph);
-                    Console.WriteLine($"Any: {compareResult}");
+                    PrintRelevance($"Any: {compareResult}");
                     break;
                 case "anysimilar":
                     compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
-                    Console.WriteLine($"AnySimilar: {compareResult}");
+                    PrintRelevance($"AnySimilar: {compareResult}");
                     break;
             }
             return compareResult;
         }
-
+        private static void PrintRelevance(string text)
+        {
+#if Print_Percentage
+            Console.WriteLine(text);
+#endif
+        }
         private static double SingleWordCompare(PSpeechPattern proto,SSpeechPattern speech,int i,int j)
         {
             var len = speech.Units[j].MorphInfo.Text.Length;
