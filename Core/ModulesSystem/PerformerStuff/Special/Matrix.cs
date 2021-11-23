@@ -3,6 +3,7 @@ using System.Text;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
 {
+    
     public class Matrix
     {
         public Matrix(Matrix m)

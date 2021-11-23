@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using K3NA_Remastered_2.ModulesSystem.Submodules;
+
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands
 {
-    public class CommandsExecutor: ISubModule
+    public class CommandsExecutor
     {
         private static int _indexPtr = 0;//can cause errors when reached max
         private delegate void OnNew(int index);

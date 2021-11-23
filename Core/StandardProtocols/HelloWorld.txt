@@ -40,7 +40,7 @@ Name{
 Hello world 2
 }
 Pattern{
-привет тебе, обыватель <var:singleWord:name>
+привет тебе, <var:singleWord:name>
 }
 };
 Protocol:standard{
@@ -48,7 +48,7 @@ Name{
 variative protocol
 }
 Pattern{
-найди <var:type1:varname> 
+найди <var:singleWord:varname> 
 }
 Commands{
 GoogleSearch("<varname>","true");
