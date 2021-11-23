@@ -34,5 +34,20 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules
                 }
             }
         }
+        public void Start()
+        {
+            foreach (var module in _modules)
+            {
+                try
+                {
+                    module.Start();
+                    MBus.AuthModule(module);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Loading module error: {module.Name} : {e}");
+                }
+            }
+        }
     }
 }

@@ -78,27 +78,18 @@ namespace K3NA_Remastered_2
             }
         }
         private static string Str(this string[] a) => string.Join(';', a);
-        private static void Main(string[] args)
+        private static void Main()
         {
             Test();
             //DebugProtocols();
-            //Modules.Load(new InnerDoubles<IModule>(){new SpeechModule(), new TestModule()});
+            //Modules.Load(new List<IModule>(){new SpeechModule(), new TestModule()});
+            //Modules.Start();
 
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
             //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
 
 
-
-            //var result = MorphAnalyzer.Parse("слово", "привет","закрой","ибрагим","очаровательно","она");
-            //foreach (var r in result)
-            //{
-            //    Console.WriteLine($"{r.Text}: {r.BestTag}");
-            //}
-            //DefaultProtocol proto = new DefaultProtocol();
-            //proto.Construct(ProtocolsLoader.GetProtocols().First());
-
-            //CommandsExecutor usage: SubModules.GetCommandsExecutor().
             Console.ReadKey();
         }
     }

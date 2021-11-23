@@ -2,25 +2,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesImplementation;
+using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
 using k3na_voice;
 using ModuleBuffer = K3NA_Remastered_2.ModulesSystem.Modules.Implementation.ModuleBuffer;
 using ModuleRequest = K3NA_Remastered_2.ModulesImplementation.ModuleRequest;
 
-namespace K3NA_Remastered_2.ModulesSystem.Modules
+namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete
 {
-    
     internal sealed class SpeechModule:IModule
     {
-        private class SubscribeOverride
-        {
-            public SubscribeOverride(string overrider,bool single=true)
-            {
-                this.Overrider = overrider;
-                this.Single = single;
-            }
-            public readonly string Overrider;
-            public readonly bool Single;
-        }
         public SpeechModule()
         {
             Console.WriteLine("SRM constructed");
@@ -36,7 +26,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules
         }
         public void Start()
         {
-            throw new NotImplementedException();
+            _srm.Start();
         }
         public void Subscribe(string moduleName)
         {
@@ -46,12 +36,10 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules
         {
             _subscribers.Remove(moduleName);
         }
-
         public void Override(string moduleName, bool single = true)
         {
             _override = new SubscribeOverride(moduleName,single);
         }
-
         private void InitTask()
         {
             Console.WriteLine("SRM initialized");

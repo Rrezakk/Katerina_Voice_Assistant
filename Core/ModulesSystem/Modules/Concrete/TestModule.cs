@@ -2,7 +2,7 @@
 using K3NA_Remastered_2.ModulesImplementation;
 using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
 
-namespace K3NA_Remastered_2.Modules
+namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete
 {
     class TestModule : IModule
     {

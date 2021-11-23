@@ -4,12 +4,11 @@ using System.Linq;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
-    public class VariablesProcessor
+    public static class VariablesProcessor
     {
         //move all the variables logic here
         //variable storage rename to variable context...maybe
@@ -93,7 +92,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 
             return variables;
         }
-        
         public static void FillArguments(VariableStorage storage,ref List<Command> commands)
         {
             Console.WriteLine($"Before filling arguments:");
@@ -138,19 +136,5 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 Command.About(command);
             }
         }
-        //public void ExecuteRecognizedProtocol(Protocol protocol, SSpeechPattern speechPattern)
-        //{
-        //    Console.WriteLine($"SpeechPattern: {speechPattern.ToString()}");
-        //    Console.WriteLine($"ProtoPattern: {protocol.GetPattern().ToString()}");
-        //    var variables = ExtractVariables(protocol.GetPattern(), speechPattern);//мы получили переменные
-        //    foreach (var var in variables)
-        //    {
-        //        this.SetVariable(var);//глупо, но с закосом на будущее
-        //    }
-        //    var commands = protocol.GetCommands();
-        //    FillArguments(ref commands/*,this._variables*/);//вставляем переменные в аргументы
-        //    var container = new CommandsContainer(commands, this, protocol.Name);//связываем
-        //    Core.SubModules.CommandsExecutor().EnqueueNew(container); //выставляем команды в очередь на выполнение
-        //}
     }
 }
