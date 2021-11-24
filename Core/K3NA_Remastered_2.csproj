@@ -15,7 +15,10 @@
 
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
+    <PackageReference Include="Concentus" Version="1.1.7" />
+    <PackageReference Include="Concentus.OggFile" Version="1.0.4" />
     <PackageReference Include="DeepMorphy" Version="2.0.3" />
+    <PackageReference Include="NAudio" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>

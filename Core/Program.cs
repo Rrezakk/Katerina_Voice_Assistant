@@ -7,6 +7,7 @@ using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables;
+using K3NA_Remastered_2.Yandex_API;
 
 namespace K3NA_Remastered_2
 {
@@ -80,7 +81,8 @@ namespace K3NA_Remastered_2
         private static string Str(this string[] a) => string.Join(';', a);
         private static void Main()
         {
-            Test();
+            //Test();
+            TTS.test();
             //DebugProtocols();
             //Modules.Load(new List<IModule>(){new SpeechModule(), new TestModule()});
             //Modules.Start();
