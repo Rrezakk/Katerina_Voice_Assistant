@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeepMorphy;
-using K3NA_Remastered_2.ModulesImplementation;
 using K3NA_Remastered_2.ModulesSystem.Modules;
 using K3NA_Remastered_2.ModulesSystem.Modules.Concrete;
 using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM;
@@ -87,15 +86,12 @@ namespace K3NA_Remastered_2
             //Test();
             //TTS.test();
             //DebugProtocols();
-            Modules.Load(new List<IModule>(){new SpeechModule(), new TestModule()});
+            Modules.Load(new List<Module>(){new SpeechModule(), new TestModule()});
             Modules.Start();
             MBus.Start();
-
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
             //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
-
-
             Console.ReadKey();
         }
     }

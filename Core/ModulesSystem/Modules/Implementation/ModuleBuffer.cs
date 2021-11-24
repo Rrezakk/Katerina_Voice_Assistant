@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using K3NA_Remastered_2.ModulesImplementation;
 
 namespace K3NA_Remastered_2.ModulesSystem.Modules.Implementation
 {

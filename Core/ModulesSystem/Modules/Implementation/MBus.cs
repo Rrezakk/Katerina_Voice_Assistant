@@ -11,7 +11,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Implementation
     {
         private static readonly object RequestsLocker = new object ();
         private static readonly object ModulesLocker = new object();
-        private static readonly Dictionary<string, ModulesImplementation.IModule> Modules = new Dictionary<string, ModulesImplementation.IModule>();
+        private static readonly Dictionary<string, Module> Modules = new Dictionary<string, Module>();
         private static readonly Queue<ModuleRequest> Requests = new Queue<ModuleRequest>();
         public enum SpecialRequestType
         {
@@ -19,7 +19,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Implementation
             Unsubscribe,
             Override
         }
-        public static void AuthModule(ModulesImplementation.IModule module)
+        public static void AuthModule(Module module)
         {
 #if deb
 Console.WriteLine($"Auth module: {module.Name}");
