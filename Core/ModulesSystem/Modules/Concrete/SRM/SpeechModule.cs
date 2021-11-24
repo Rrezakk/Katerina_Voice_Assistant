@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesImplementation;
 using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
-using k3na_voice;
 using ModuleBuffer = K3NA_Remastered_2.ModulesSystem.Modules.Implementation.ModuleBuffer;
-using ModuleRequest = K3NA_Remastered_2.ModulesImplementation.ModuleRequest;
+using ModuleRequest = K3NA_Remastered_2.ModulesSystem.Modules.Implementation.ModuleRequest;
 
-namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete
+namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
 {
     internal sealed class SpeechModule:IModule
     {
@@ -18,7 +17,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete
         public string Name { get; set; } = "SRM";
         public ModuleBuffer InBuffer { get; set; } = new ModuleBuffer();
         private readonly List<string> _subscribers = new List<string>();
-        private SpeechRecognitionModule _srm;
+        private SpeechRecognizer _srm;
         private SubscribeOverride _override;
         public async void Init()
         {
@@ -42,16 +41,16 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete
         }
         private void InitTask()
         {
-            Console.WriteLine("SRM initialized");
             InBuffer.OnRequest += OnIncomingRequest;
             try
             {
-                _srm = new SpeechRecognitionModule();
+                _srm = new SpeechRecognizer();
                 _srm.OnSpeech += Module_OnSpeech;
+                Console.WriteLine($">{Name} initialized");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Module init exception: {Name} - {e}");
+                Console.WriteLine($">Module init exception: {Name} - {e}");
             }
         }
         private static void OnIncomingRequest(ModuleRequest request)

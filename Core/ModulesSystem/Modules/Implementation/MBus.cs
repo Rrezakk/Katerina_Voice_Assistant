@@ -1,17 +1,18 @@
 ﻿//#define deb
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace K3NA_Remastered_2.ModulesImplementation
+namespace K3NA_Remastered_2.ModulesSystem.Modules.Implementation
 {
     internal static class MBus
     {
         private static readonly object RequestsLocker = new object ();
         private static readonly object ModulesLocker = new object();
         private static readonly Dictionary<string, ModulesImplementation.IModule> Modules = new Dictionary<string, ModulesImplementation.IModule>();
-        private static readonly Queue<ModulesImplementation.ModuleRequest> Requests = new Queue<ModulesImplementation.ModuleRequest>();
+        private static readonly Queue<ModuleRequest> Requests = new Queue<ModuleRequest>();
         public enum SpecialRequestType
         {
             Subscribe,
@@ -25,6 +26,10 @@ Console.WriteLine($"Auth module: {module.Name}");
 #endif
             lock (ModulesLocker)
             {
+                if (Modules.ContainsKey(module.Name))
+                {
+                    throw new Exception($"It's not allowed to auth module twice: {module.Name}");
+                }
                 Modules.Add(module.Name, module);
             }
         }
@@ -44,7 +49,6 @@ Console.WriteLine($"SpecialRequest in MBus: {request}");
                         {
                             Modules[mas[1]].Subscribe(mas[0]);
                         }
-
                         return true;
                     }
                     catch (Exception e)
@@ -91,11 +95,12 @@ Console.WriteLine($"SpecialRequest in MBus: {request}");
         public static void MakeRequest(ModuleRequest request)
         {
 #if deb
-Console.WriteLine($"Request in MBus: {request.From} {request.To} {request.Message}");
+Console.WriteLine($"Enqueued request in MBus: {request}");
 #endif
             lock (RequestsLocker)
             {
                 Requests.Enqueue(request);
+                
             }
         }
         public static void ListModules()
@@ -111,12 +116,10 @@ Console.WriteLine("Authenticated modules: ");
                 }
             }
         }
-
         public static async void Start()
         {
             await Task.Run(Cycle);
         }
-
         private static Task Cycle()
         {
             while (true)

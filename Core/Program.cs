@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeepMorphy;
+using K3NA_Remastered_2.ModulesImplementation;
 using K3NA_Remastered_2.ModulesSystem.Modules;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
+using K3NA_Remastered_2.ModulesSystem.Modules.Concrete;
+using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM;
+using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables;
-using K3NA_Remastered_2.Yandex_API;
+using K3NA_Remastered_2.Stuff;
 
 namespace K3NA_Remastered_2
 {
@@ -41,7 +44,7 @@ namespace K3NA_Remastered_2
                 foreach (var c in protocol.GetCommands())
                 {
                     Console.WriteLine($"    Command: {c.Name}");
-                    var args = c.Arguments.Str();
+                    var args = c.Arguments.Concat();
                     if(args!="")
                         Console.WriteLine($"        Arguments: {args}");
                 }
@@ -78,14 +81,15 @@ namespace K3NA_Remastered_2
                 OnSpeech(phrase);
             }
         }
-        private static string Str(this string[] a) => string.Join(';', a);
+        
         private static void Main()
         {
             //Test();
-            TTS.test();
+            //TTS.test();
             //DebugProtocols();
-            //Modules.Load(new List<IModule>(){new SpeechModule(), new TestModule()});
-            //Modules.Start();
+            Modules.Load(new List<IModule>(){new SpeechModule(), new TestModule()});
+            Modules.Start();
+            MBus.Start();
 
             //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
             //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages

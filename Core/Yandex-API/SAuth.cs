@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -7,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace K3NA_Remastered_2.Yandex_API
+namespace K3NA_Remastered_2
 {
     public class SAuth
     {
@@ -18,10 +17,10 @@ namespace K3NA_Remastered_2.Yandex_API
         }
         public const string FolderId = "b1glia0cgh1tqpjp48f4";
         public const string OauthToken = "AQAAAAAO_IRoAATuwQCcneB1GEPYlK7mFP_wcJg";
-        public static TokenInfo AccessToken;
-        static SAuth()
+        private static TokenInfo _iam;
+        public static TokenInfo AccessToken
         {
-            AccessToken = GetToken(OauthToken).Result;
+            get { return _iam ??= GetToken(OauthToken).Result; }
         }
         public static async Task<TokenInfo> GetToken(string oauth)
         {

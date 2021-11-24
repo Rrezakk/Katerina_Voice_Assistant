@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using K3NA_Remastered_2.ModulesImplementation;
+using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
 
 namespace K3NA_Remastered_2.ModulesSystem.Modules
 {
@@ -17,8 +17,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules
         {
             _modules = modules;
         }
-
-        public void Load(List<IModule> modules)
+        public void Load(IEnumerable<IModule> modules)
         {
             _modules.AddRange(modules);
             foreach (var module in _modules)
@@ -27,6 +26,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules
                 {
                     module.Init();
                     MBus.AuthModule(module);
+                    Console.WriteLine($"Module loaded: {module.Name}");
                 }
                 catch (Exception e)
                 {
@@ -41,11 +41,11 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules
                 try
                 {
                     module.Start();
-                    MBus.AuthModule(module);
+                    Console.WriteLine($"Module started: {module.Name}");
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Loading module error: {module.Name} : {e}");
+                    Console.WriteLine($"Start module error: {module.Name} : {e}");
                 }
             }
         }

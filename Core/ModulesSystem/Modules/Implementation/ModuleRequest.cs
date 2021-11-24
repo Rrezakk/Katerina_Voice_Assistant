@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace K3NA_Remastered_2.ModulesImplementation
+namespace K3NA_Remastered_2.ModulesSystem.Modules.Implementation
 {
     public class ModuleRequest:ICloneable
     {
@@ -22,6 +22,11 @@ namespace K3NA_Remastered_2.ModulesImplementation
         public object Clone()
         {
             return new ModuleRequest(this.From,this.To,this.Message) {};
+        }
+
+        public override string ToString()
+        {
+            return $"Id: {Id} From: {From} To: {To} Message: {Message}";
         }
     }
 }

@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace K3NA_Remastered_2.Yandex_API
+namespace K3NA_Remastered_2
 {
-    public class STT
+    // ReSharper disable once InconsistentNaming
+    public static class STT
     {
         public static async Task<string> RecognizeTask(string iam, string folderId, string filepath)
         {
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + iam);
-            string[] ft = new string[]{"topic=general",
+            var ft = new string[]{"topic=general",
                 $"folderId={folderId}",
                 "lang=ru-RU"};
-            var req = String.Join('&', ft);
+            var req = string.Join('&', ft);
             HttpContent ctx = new ByteArrayContent(await File.ReadAllBytesAsync(filepath));
             var response = await client.PostAsync($"https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?{req}", ctx);
             var responseBytes = await response.Content.ReadAsStringAsync();
