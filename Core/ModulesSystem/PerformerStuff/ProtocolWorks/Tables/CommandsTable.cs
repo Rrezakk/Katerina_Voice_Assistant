@@ -11,6 +11,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Tables
             {
                 "Say" => new SayCommand(),
                 "ConsolePrint" => new ConsolePrintCommand(),
+                //"Speak"=>new SpeakCommand(),
                 _ => new NotRecognizedCommand()
             };
         }

@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace K3NA_Remastered_2
+namespace K3NA_Remastered_2.Yandex_API
 {
     // ReSharper disable once InconsistentNaming
     public static class STT

@@ -16,9 +16,16 @@
     <PackageReference Include="DeepMorphy" Version="2.0.3" />
     <PackageReference Include="NAudio" Version="2.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Superpower" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Configuration\defaultConfig.env">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\srmConfig.env">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="StandardProtocols\HelloWorld.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

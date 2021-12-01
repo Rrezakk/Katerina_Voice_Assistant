@@ -10,6 +10,8 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
 {
     internal sealed class Performer:Module
     {
+        //private ExecutionForwarder _executionForwarder = new ExecutionForwarder();
+        private DefaultExecutor _executor = new DefaultExecutor();//заглушка до лучших времен
         public Performer()
         {
             this.Name = "Performer";
@@ -35,13 +37,14 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
             Console.WriteLine(storage);
             var commands = protocol.GetCommands();
             VariablesProcessor.FillArguments(storage, ref commands);
+            //_executor.Execute();
         }
         private static void OnRequestToModule(ModuleRequest request)
         {
             switch (request.From)
             {
                 case "SRM":
-                    ModuleRequestParser.ParseSRMRequest(request.Message,out string speech);
+                    ModuleRequestParser.ParseSrmRequest(request.Message,out string speech);
                     ProcessSrmRequest(speech);
                     break;
                 case "test":

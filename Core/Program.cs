@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeepMorphy;
+using K3NA_Remastered_2.Configuration;
 using K3NA_Remastered_2.ModulesSystem.Modules;
 using K3NA_Remastered_2.ModulesSystem.Modules.Concrete;
+using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer;
 using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM;
 using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
@@ -15,11 +17,20 @@ namespace K3NA_Remastered_2
 {
     public static class Core
     {
+        public static readonly AppConfiguration AppConfiguration = new AppConfiguration("C:\\Users\\kiril\\Desktop\\K3NA-GIT\\Core\\Configuration\\");///defaultConfig.env //Environment.CurrentDirectory+" / Configuration"
         public static readonly MorphAnalyzer MorphAnalyzer = new MorphAnalyzer(true, true);
         public static readonly ProtocolsStorage ProtocolsStorage = new ProtocolsStorage();//automaticaly loades protocols
         public static readonly VariableStorage  GlobalVariables = new VariableStorage();//global variables storage
-        public static readonly ModulesContainer Modules = new ModulesContainer(/*new InnerDoubles<IModule>() { new SpeechModule(), new TestModule() }*/);
-        public static void OnSpeech(string speech)
+        private static readonly ModulesContainer Modules = new ModulesContainer(/*new InnerDoubles<IModule>() { new SpeechModule(), new TestModule() }*/);
+        private static void Test()
+        {
+            var phrases = new List<string>() { "Алёнка и другие и я",/*,"найди кокос","привет тебе пупсик"*//*,"привет обыватель","найди","привет тебе цветок"*/};
+            foreach (var phrase in phrases)
+            {
+                OnSpeech(phrase);
+            }
+        }
+        private static void OnSpeech(string speech)
         {
             var speechPattern = new SSpeechPattern(speech);
             var protocol = RelevanceAnalyzer.GetMaxRelevanceProtocol(speechPattern, ProtocolsStorage.Protocols);
@@ -72,26 +83,17 @@ namespace K3NA_Remastered_2
                 }
             }
         }
-        private static void Test()
-        {
-            var phrases = new List<string>() { "Алёнка и другие и я",/*,"найди кокос","привет тебе пупсик"*//*,"привет обыватель","найди","привет тебе цветок"*/};
-            foreach (var phrase in phrases)
-            {
-                OnSpeech(phrase);
-            }
-        }
-        
         private static void Main()
         {
             //Test();
             //TTS.test();
             //DebugProtocols();
-            Modules.Load(new List<Module>(){new SpeechModule(), new TestModule()});
+            Modules.Load(new List<Module>(){new SpeechModule(), new TestModule(),new Performer()});
             Modules.Start();
             MBus.Start();
-            //MBus.MakeRequest(new ModuleRequest("test","SRM","тестовое сообщение"));
-            //MBus.MakeSpecialRequest("test SRM",MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
-            //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once, but nobody will get this message
+            MBus.MakeRequest(new ModuleRequest("Core","SRM","тестовое сообщение к SRM"));
+            MBus.MakeSpecialRequest("Performer SRM", MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
+            MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once,then nobody will get this message except test-module
             Console.ReadKey();
         }
     }

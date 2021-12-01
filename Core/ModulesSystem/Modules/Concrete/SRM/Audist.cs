@@ -11,7 +11,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
     {
         public Audist()
         {
-            _storage.AmplitudeEma.Alpha = Configuration.BasicEmaAlpha;
+            _storage.AmplitudeEma.Alpha = Configuration.AudistEmaAlpha;
             OnFragment += Audist_onFragment;
         }
         private WaveInEvent _waveSource;

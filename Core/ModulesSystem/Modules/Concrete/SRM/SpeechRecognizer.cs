@@ -1,4 +1,6 @@
 ﻿using System;
+using K3NA_Remastered_2.Yandex_API;
+
 namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
 {
     public class SpeechRecognizer

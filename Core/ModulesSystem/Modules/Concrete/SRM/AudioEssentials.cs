@@ -1,4 +1,5 @@
 ﻿#define dia //for diagnostics
+//#define deb //other diagnostics
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

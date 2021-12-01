@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.IO;
-using NAudio.Wave;
 using Concentus.Oggfile;
 using Concentus.Structs;
+using NAudio.Wave;
 
 namespace K3NA_Remastered_2.Yandex_API
 {
-    class TTS
+    internal static class Tts
     {
-        public static void test()
+        public static void Test()
         {
-            Stopwatch eaStopwatch = new Stopwatch();
+            var eaStopwatch = new Stopwatch();
             eaStopwatch.Start();
             SpeakAsync("текст");
             Console.WriteLine($"In: {eaStopwatch.ElapsedMilliseconds}ms");
@@ -24,7 +24,7 @@ namespace K3NA_Remastered_2.Yandex_API
         {
             await Task.Run(() => Synth(SAuth.AccessToken.IamToken, SAuth.FolderId, text));
         }
-        public static async void Synth(string token, string folderId, string text)
+        private static async void Synth(string token, string folderId, string text)
         {
             try
             {
@@ -36,15 +36,15 @@ namespace K3NA_Remastered_2.Yandex_API
                 Console.WriteLine($"Synthesis error: {e}");
             }
         }
-        private static async void Synthesis(string token, string FolderId, string text, string voice = "jane")
+        private static async void Synthesis(string token, string folderId, string text, string voice = "jane")
         {
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var values = new Dictionary<string, string>
             {
                 {"text", text},
                 {"lang", "ru-RU"},
-                {"folderId", FolderId},
+                {"folderId", folderId},
                 {"voice", voice},
                 {"emotion", "neutral"}, //good evil neutral
                 {"speed", "1.0"}, //0.1-3.0
@@ -54,29 +54,27 @@ namespace K3NA_Remastered_2.Yandex_API
             var content = new FormUrlEncodedContent(values);
             var response = await client.PostAsync("https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize", content);
             var responseBytes = await response.Content.ReadAsByteArrayAsync();
-            var fileWav = "Audio.wav";
-            await using MemoryStream pcmStream = new MemoryStream();
-            OpusDecoder decoder = OpusDecoder.Create(48000, 1);
-            OpusOggReadStream oggIn = new OpusOggReadStream(decoder, new MemoryStream(responseBytes));
+            const string fileWav = "Audio.wav";
+            await using var pcmStream = new MemoryStream();
+            var decoder = OpusDecoder.Create(48000, 1);
+            var oggIn = new OpusOggReadStream(decoder, new MemoryStream(responseBytes));
             while (oggIn.HasNextPacket)
             {
-                short[] packet = oggIn.DecodeNextPacket();
-                if (packet != null)
+                var packet = oggIn.DecodeNextPacket();
+                if (packet == null) continue;
+                foreach (var t in packet)
                 {
-                    for (int i = 0; i < packet.Length; i++)
-                    {
-                        var bytes = BitConverter.GetBytes(packet[i]);
-                        pcmStream.Write(bytes, 0, bytes.Length);
-                    }
+                    var bytes = BitConverter.GetBytes(t);
+                    pcmStream.Write(bytes, 0, bytes.Length);
                 }
             }
             pcmStream.Position = 0;
             var wavStream = new RawSourceWaveStream(pcmStream, new WaveFormat(48000, 1));
             var sampleProvider = wavStream.ToSampleProvider();
             WaveFileWriter.CreateWaveFile16($"{fileWav}", sampleProvider);
-            File.WriteAllBytes("speech.ogg", responseBytes);
+            //await File.WriteAllBytesAsync("speech.ogg", responseBytes);
             //запуск звука
-            System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"Audio.wav");
+            var player = new System.Media.SoundPlayer(@"Audio.wav");
             player.Play();
         }
     }
