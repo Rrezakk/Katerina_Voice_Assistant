@@ -22,25 +22,26 @@
 
 
 4. **defaultConfig.env**
-
-   FolderId=Your Yandex cloud folder id
-   OauthToken=Your token Yandex cloud OAuthTolen
-   IamAPIKey=default
-
+```
+FolderId=Your Yandex cloud folder id
+OauthToken=Your token Yandex cloud 
+OAuthTolenIamAPIKey=default
+```
 5. To get keys, google... now sorry, didn't explain
 
 6. **srmConfig.env**
-
-   SampleRate=48000
-   BitResolution=16
-   Channels=1
-   WaveInputBuffer=100
-   SoundDevice=0
-   Treshold=1400
-   PreRecordBytes=4800
-   AudistEmaAlpha=0.9
-   DefaultEmaAlpha=0.3
-   NoiseMeterAlpha=0.08
+```
+SampleRate=48000
+BitResolution=16
+Channels=1
+WaveInputBuffer=100
+SoundDevice=0
+Treshold=1400
+PreRecordBytes=4800
+AudistEmaAlpha=0.9
+DefaultEmaAlpha=0.3
+NoiseMeterAlpha=0.08
+```
 
 7. Then build and run the project!
 
