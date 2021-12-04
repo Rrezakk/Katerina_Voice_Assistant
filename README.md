@@ -18,18 +18,18 @@
 2. Launch solution (K3NA_Remastered_2.sln file)
 
 3. In folder called "Configuration" create two files: 
+   ![image-20211204193147500](https://user-images.githubusercontent.com/52713544/144717484-02df05ad-bb81-4173-a0d8-a49dbe7c16aa.png)
 
-4. ![image-20211204193147500](C:\Users\kiril\AppData\Roaming\Typora\typora-user-images\image-20211204193147500.png)
 
-5. **defaultConfig.env**
+4. **defaultConfig.env**
 
    FolderId=Your Yandex cloud folder id
    OauthToken=Your token Yandex cloud OAuthTolen
    IamAPIKey=default
 
-6. To get keys, google... now sorry, didn't explain
+5. To get keys, google... now sorry, didn't explain
 
-7. **srmConfig.env**
+6. **srmConfig.env**
 
    SampleRate=48000
    BitResolution=16
@@ -42,7 +42,7 @@
    DefaultEmaAlpha=0.3
    NoiseMeterAlpha=0.08
 
-8. Then build and run the project!
+7. Then build and run the project!
 
 ## There's a way to create "protocols":
 
