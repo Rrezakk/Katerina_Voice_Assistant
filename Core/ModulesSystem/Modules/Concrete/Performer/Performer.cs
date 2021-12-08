@@ -10,8 +10,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
 {
     internal sealed class Performer:Module
     {
-        //private ExecutionForwarder _executionForwarder = new ExecutionForwarder();
-        private DefaultExecutor _executor = new DefaultExecutor();//заглушка до лучших времен
+        private static DefaultExecutor _executor = new DefaultExecutor();//заглушка до лучших времен
         public Performer()
         {
             this.Name = "Performer";
@@ -37,7 +36,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
             Console.WriteLine(storage);
             var commands = protocol.GetCommands();
             VariablesProcessor.FillArguments(storage, ref commands);
-            //_executor.Execute();
+            _executor.Execute(commands);//заглушка до лучших времен
         }
         private static void OnRequestToModule(ModuleRequest request)
         {

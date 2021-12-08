@@ -1,0 +1,11 @@
+﻿Protocol:standard{
+Name{
+Open
+}
+Pattern{
+<word:any:открой|открыть|запусти|запустить> <var:singleWord:program>
+}
+Commands{
+Execute("<program>");
+}
+};

@@ -10,9 +10,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
     public static class VariablesProcessor
     {
-        //move all the variables logic here
-        //variable storage rename to variable context...maybe
-        //bind protocol's patterns and storages
         public static List<Variable> ExtractVariables(PSpeechPattern protocolPattern, SSpeechPattern speechPattern)
         {
             var variables = new List<Variable>();

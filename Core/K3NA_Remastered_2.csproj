@@ -20,8 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Configuration\default.env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Configuration\defaultConfig.env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\srm.env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Configuration\srmConfig.env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
