@@ -56,6 +56,13 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM.AudioEssentials
             //also: https://dropsofai.com/sound-wave-basics-every-data-scientist-must-know-before-starting-analysis-on-audio-data/
             //also: https://towardsdatascience.com/understanding-audio-data-fourier-transform-fft-spectrogram-and-speech-recognition-a4072d228520
             //and maybe: https://www.cyberforum.ru/windows-forms/thread1706717.html
+            
+            
+            //https://www.compadre.org/osp/pwa/soundanalyzer/ -> представление о шуме и целевом сигнале
+            
+            //в дальнейшем заняться анализом амплитуд только целевого спектра и тем самым отсеять большую часть шумов
+            //шумоподавление дополнительно:  http://tka4.org/tka4/soft/Simple%20Noise%20Reduction/Simple%20Noise%20Reduction.pdf
+            //http://tka4.org/tka4/soft/Adaptive%20Noise%20Reduction/Adaptive%20Noise%20Reduction%20(R1).pdf
                 
             AudioConsistence = (int)(0.7f * ((float)IntegralVolume / _audioShorts.Length) + 0.3f * (MaxVolume));
                 
