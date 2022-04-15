@@ -1,6 +1,6 @@
 ﻿using System;
+using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM.AudioEssentials;
 using NAudio.Wave;
-using static K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM.AudioEssentials;
 //#define deb
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -41,7 +41,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
             {
                 _storage.Add(_fragment);
                 _previouslyIterated = true;
-                Console.WriteLine($"Fragment {_storage.GetFragments().Count}: {_fragment.AudioConsistence}/{treshold} - {_fragment.Amplitude} - {_fragment.dB}dB");
+                Console.WriteLine($"Fragment {_storage.GetFragments().Count}: {_fragment.AudioConsistence}/{treshold} - {_fragment.Amplitude} - {_fragment.Db}dB");
 
             }
             else
@@ -49,7 +49,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
                 if (_previouslyIterated)
                 {
                     _storage.Add(_fragment);
-                    Console.WriteLine($"Fragment {_storage.GetFragmentsCount()}: {_fragment.AudioConsistence}/{treshold} - {_fragment.Amplitude} - {_fragment.dB}dB");
+                    Console.WriteLine($"Fragment {_storage.GetFragmentsCount()}: {_fragment.AudioConsistence}/{treshold} - {_fragment.Amplitude} - {_fragment.Db}dB");
 
                     //maybe add if(>treshold) reaccept else last
                     
