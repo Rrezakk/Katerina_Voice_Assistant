@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using System;
+using NAudio.Wave;
 using static K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM.AudioEssentials;
 //#define deb
 
@@ -33,19 +34,25 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
                 _fragment.AppendBytes(e.Buffer);
                 return;
             }
-
             _fragment.Process();
+            var treshold = Configuration.Treshold + NoiseMeter.GetVolume();//Experimental
 
-            if (_storage.AmplitudeEma.Iterate(_fragment.MaxAmplitude) >= Configuration.Treshold + NoiseMeter.GetVolume())//Experimental
+            if (_storage.AmplitudeEma.Iterate(_fragment.AudioConsistence) >= treshold)
             {
                 _storage.Add(_fragment);
                 _previouslyIterated = true;
+                Console.WriteLine($"Fragment {_storage.GetFragments().Count}: {_fragment.AudioConsistence}/{treshold} - {_fragment.Amplitude} - {_fragment.dB}dB");
+
             }
             else
             {
                 if (_previouslyIterated)
                 {
                     _storage.Add(_fragment);
+                    Console.WriteLine($"Fragment {_storage.GetFragmentsCount()}: {_fragment.AudioConsistence}/{treshold} - {_fragment.Amplitude} - {_fragment.dB}dB");
+
+                    //maybe add if(>treshold) reaccept else last
+                    
                     OnLastFragment?.Invoke(_storage.Count()); //Подняв событие, мы получаем id первого блока, не проходящего treshold
                     _previouslyIterated = false;
                 }
