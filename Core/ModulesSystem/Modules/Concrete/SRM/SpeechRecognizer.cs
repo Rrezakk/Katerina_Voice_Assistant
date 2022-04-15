@@ -6,9 +6,8 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
     public class SpeechRecognizer
     {
         public delegate void OnSpeechDelegate(string speech);
-        public event OnSpeechDelegate OnSpeech;
+        public event OnSpeechDelegate OnSpeechRecognized;
         private static Audist Recorder { get; set; }
-        public SpeechRecognizer(){}
         public void Start()
         {
             Recorder = new Audist();
@@ -17,6 +16,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
         }
         private void Recorder_OnAudioFile(string path)
         {
+            return;
             var recognitionResult = STT.RecognizeTask(SAuth.AccessToken.IamToken, SAuth.FolderId, path).Result;
             Console.WriteLine($"Recorded: {path} \nResult: {recognitionResult}");
             if (recognitionResult.Contains("result"))
@@ -24,7 +24,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
                 var i = recognitionResult.IndexOf("\"",10, StringComparison.Ordinal)+1;
                 recognitionResult = recognitionResult.Substring(i, recognitionResult.Length - i - 2);
             }
-            OnSpeech?.Invoke(recognitionResult);
+            OnSpeechRecognized?.Invoke(recognitionResult);
         }
         ~SpeechRecognizer()
         {

@@ -23,7 +23,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
                 try
                 {
                     _srm = new SpeechRecognizer();
-                    _srm.OnSpeech += SpeechRecognizer_OnSpeech;
+                    _srm.OnSpeechRecognized += SpeechRecognizedRecognizerOnSpeechRecognized;
                     Console.WriteLine($">{Name} initialized");
                 }
                 catch (Exception e)
@@ -40,9 +40,9 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
         {
             Console.WriteLine($"New request from:{request.From} To:{request.To} ::: {request.Message}");
         }
-        private void SpeechRecognizer_OnSpeech(string speech)
+        private void SpeechRecognizedRecognizerOnSpeechRecognized(string speech)
         {
-            base.SendRequest(speech);
+            SendRequest(speech);
         }
     }
 }

@@ -72,8 +72,6 @@ namespace K3NA_Remastered_2.Yandex_API
             var wavStream = new RawSourceWaveStream(pcmStream, new WaveFormat(48000, 1));
             var sampleProvider = wavStream.ToSampleProvider();
             WaveFileWriter.CreateWaveFile16($"{fileWav}", sampleProvider);
-            //await File.WriteAllBytesAsync("speech.ogg", responseBytes);
-            //запуск звука
             var player = new System.Media.SoundPlayer(@"Audio.wav");
             player.Play();
         }

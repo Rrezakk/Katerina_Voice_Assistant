@@ -14,7 +14,7 @@ namespace K3NA_Remastered_2.Yandex_API
             public string IamToken { get; set; }
             public string ExpiresAt { get; set; }
         }
-        public static string FolderId => Core.AppConfiguration.GetVariable("FolderId"); //K3NA_Remastered_2.Core.AppConfiguration.//"b1glia0cgh1tqpjp48f4";
+        public static string FolderId => Core.AppConfiguration.GetVariable("FolderId"); 
         public static string OauthToken => Core.AppConfiguration.GetVariable("OauthToken");
         private static TokenInfo _iam;
         public static TokenInfo AccessToken
@@ -24,7 +24,6 @@ namespace K3NA_Remastered_2.Yandex_API
         private static async Task<TokenInfo> GetToken(string oauth)
         {
             var client = new HttpClient();
-            //curl -d "{\"yandexPassportOauthToken\":\"<OAuth-token>\"}" "https://iam.api.cloud.yandex.net/iam/v1/tokens"
             var bytes = Encoding.ASCII.GetBytes("{\"yandexPassportOauthToken\":\"" + oauth + "\"}");
             HttpContent ctx = new ByteArrayContent(bytes);
             var response = await client.PostAsync($"https://iam.api.cloud.yandex.net/iam/v1/tokens", ctx);

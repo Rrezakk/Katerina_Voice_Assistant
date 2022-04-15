@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
-using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables;
 
 namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
 {
     internal sealed class Performer:Module
     {
-        private static DefaultExecutor _executor = new DefaultExecutor();//заглушка до лучших времен
+        private static readonly DefaultExecutor Executor = new DefaultExecutor();//заглушка до лучших времен
         public Performer()
         {
             this.Name = "Performer";
@@ -26,6 +24,8 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
         }
         private static void ProcessSrmRequest(string speech)
         {
+            if (string.IsNullOrEmpty(speech)) return;
+            
             var speechPattern = new SSpeechPattern(speech);
             var protocol = RelevanceAnalyzer.GetMaxRelevanceProtocol(speechPattern, Core.ProtocolsStorage.Protocols);
             var protocolPattern = protocol.GetPattern();
@@ -36,15 +36,14 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
             Console.WriteLine(storage);
             var commands = protocol.GetCommands();
             VariablesProcessor.FillArguments(storage, ref commands);
-            _executor.Execute(commands);//заглушка до лучших времен
+            Executor.Execute(commands);//заглушка до лучших времен
         }
         private static void OnRequestToModule(ModuleRequest request)
         {
             switch (request.From)
             {
                 case "SRM":
-                    ModuleRequestParser.ParseSrmRequest(request.Message,out string speech);
-                    ProcessSrmRequest(speech);
+                    ProcessSrmRequest(request.Message);
                     break;
                 case "test":
 

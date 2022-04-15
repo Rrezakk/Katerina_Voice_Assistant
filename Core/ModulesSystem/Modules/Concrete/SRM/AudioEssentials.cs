@@ -59,10 +59,12 @@ Console.WriteLine($"Noise-meter: {vol}");
         {
             private byte[] _audioBytes = new byte[48000];
             private short[] _audioShorts = new short[24000];
-            private int _audioShortsPtr;
-            private int _ptr;
-            public int MaxAmplitude;
-            public int TotalVolume;
+            private int _audioShortsPtr =0;
+            private int _ptr =0;
+            public int MaxAmplitude =0;
+            public int TotalVolume =0;
+
+            public int AudioConsistence = 0;
 
             public void AppendBytes(byte[] bytes)
             {
@@ -85,8 +87,9 @@ Console.WriteLine($"Noise-meter: {vol}");
                 {
                     try
                     {
-                        if (MaxAmplitude < Math.Abs(amp)) MaxAmplitude = Math.Abs(amp); //Максимальная громкость звука
-                        TotalVolume += amp;
+                        var absAmp = Math.Abs(amp);
+                        if (MaxAmplitude < absAmp) MaxAmplitude = absAmp; //Максимальная громкость звука
+                        TotalVolume += absAmp;
                     }
                     catch (Exception e)
                     {
@@ -94,10 +97,16 @@ Console.WriteLine($"Noise-meter: {vol}");
                     }
                 }
 
-                if (MaxAmplitude < Configuration.Treshold)//Experimental
+               
+
+                AudioConsistence = (int)(0.7f * ((float)TotalVolume / _audioShorts.Length) + 0.3f * (MaxAmplitude));
+                
+                if (AudioConsistence < Configuration.Treshold)//Experimental
                 {
-                    NoiseMeter.TakeMeasure(MaxAmplitude);
+                    NoiseMeter.TakeMeasure(AudioConsistence);
                 }
+                
+                Console.WriteLine($"Amp: {TotalVolume/_audioShorts.Length} ma: {MaxAmplitude} -> {AudioConsistence}");
             }
 
             public byte[] GetBytes()
@@ -110,15 +119,15 @@ Console.WriteLine($"Noise-meter: {vol}");
                 return _audioShorts;
             }
 
-            public void Clear()
-            {
-                _audioBytes = new byte[48000];
-                _ptr = 0;
-                MaxAmplitude = 0;
-                TotalVolume = 0;
-                _audioShorts = new short[24000];
-                _audioShortsPtr = 0;
-            }
+            // public void Clear()
+            // {
+            //     _audioBytes = new byte[48000];
+            //     _ptr = 0;
+            //     MaxAmplitude = 0;
+            //     TotalVolume = 0;
+            //     _audioShorts = new short[24000];
+            //     _audioShortsPtr = 0;
+            // }
 
             public object Clone()
             {

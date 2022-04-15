@@ -8,11 +8,11 @@ using static K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protoc
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
 {
-    class DefaultProtocol:Protocol
+    internal class DefaultProtocol:Protocol
     {
         public override string Name { get; set; }
-        private PSpeechPattern Pattern;
-        private List<Command> Commands;
+        private PSpeechPattern _pattern;
+        private List<Command> _commands;
         public override void Construct(string protocol)
         {
             Console.WriteLine($"-----------------------------");
@@ -25,18 +25,18 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
             Console.WriteLine($"Protocol pattern: {pattern}");
             Console.WriteLine($"Protocol commands: {commands}");
             Console.WriteLine("-----------------------------");
-            Pattern = ParseProtocolPattern(pattern);
-            Commands = ParseCommands(commands);
+            _pattern = ParseProtocolPattern(pattern);
+            _commands = ParseCommands(commands);
             Name = name;
         }
         public override PSpeechPattern GetPattern()
         {
-            return Pattern;
+            return _pattern;
         }
 
         public override List<Command> GetCommands()
         {
-            return Commands;
+            return _commands;
         }
     }
 }

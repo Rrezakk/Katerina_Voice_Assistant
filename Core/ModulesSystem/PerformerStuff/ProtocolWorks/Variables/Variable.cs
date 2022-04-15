@@ -4,7 +4,6 @@
     {
         public readonly string Name;
         public string Content;
-        //public readonly int Id = VariableIdGenerator.NextId();
         public string LastFilledBy;//эту механику можно использовать как контекст
         public Variable()
         {
@@ -19,10 +18,4 @@
             LastFilledBy = filler;
         }
     }
-
-    //public static class VariableIdGenerator
-    //{
-    //    private static int _id = 0;
-    //    public static int NextId() => _id++;
-    //}
 }

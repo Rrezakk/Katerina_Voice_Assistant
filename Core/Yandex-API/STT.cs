@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -14,11 +15,10 @@ namespace K3NA_Remastered_2.Yandex_API
             var ft = new string[]{"topic=general",
                 $"folderId={folderId}",
                 "lang=ru-RU"};
-            var req = string.Join('&', ft);
+            var req = string.Join("&", ft);
             HttpContent ctx = new ByteArrayContent(await File.ReadAllBytesAsync(filepath));
             var response = await client.PostAsync($"https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?{req}", ctx);
             var responseBytes = await response.Content.ReadAsStringAsync();
-            //Console.WriteLine(responseBytes);
             return responseBytes;
         }
     }

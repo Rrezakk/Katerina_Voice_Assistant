@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special;
+using K3NA_Remastered_2.LanguageExtensions;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
 {
@@ -56,11 +58,18 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 var lineElements = matrix[i]; //find max in line, excluding low relevant and already used
                 foreach (var t in lineElements.Where(t => !map.ContainsKey(t.Pos)))
                 {
-                    if (t.Value < minRelevance)
-                        errorMap.Add(i, "");
-                    else
+                    if (!(t.Value < minRelevance)) continue;
+                    if (!errorMap.ContainsKey(i))
                     {
-                        map.Add(i, t.Pos);
+                        errorMap.Add(i, "");
+
+                    }
+                    else 
+                    {
+                        if (!map.ContainsKey(i))
+                        {
+                            map.Add(i, t.Pos);
+                        }
                         break;
                     }
                 }
@@ -127,11 +136,15 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                     }
                 }
             }
+
+            var horizontalCharactersLine = "-".Repeat(18);
+            Console.WriteLine(horizontalCharactersLine);
             Console.WriteLine($"After filling arguments:");
             foreach (var command in commands)
             {
                 Command.About(command);
             }
+            Console.WriteLine(horizontalCharactersLine);
         }
     }
 }

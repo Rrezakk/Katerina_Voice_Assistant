@@ -1,4 +1,5 @@
 ﻿//#define Print_Percentage//used for enabling console output for debugging
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +12,14 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
 {
     public static class RelevanceAnalyzer
     {
-        public const double MinRelevance = 15f;
+        private const double MinRelevance = 15f;
         public static Protocol GetMaxRelevanceProtocol(string phrase, List<Protocol> protocols)
         {
             return GetMaxRelevanceProtocol(new SSpeechPattern(phrase), protocols);
         }
         public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
         {
-            var relTable = protocols.Select(protocol => RelevanceAnalyzer.MultipleRelevance(phrase, protocol.GetPattern())).ToList();
+            var relTable = protocols.Select(protocol => MultipleRelevance(phrase, protocol.GetPattern())).ToList();
             var outstr = "";
             var max = 0f;
             foreach (var line in relTable)
@@ -35,15 +36,16 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
             return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
         }
-        public static float MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
+
+        private static float MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
         {
             if (protocolPattern.Units.Count==0)
             {
                 return 0f;
             }
-            var countRel = ((float)protocolPattern.Units.Count -
-                            Math.Abs((float)protocolPattern.Units.Count - (float)speechPattern.Units.Count)) /
-                (float)protocolPattern.Units.Count*100f;//релевантность совпадения по количеству элементов
+            var countRel = (protocolPattern.Units.Count -
+                            Math.Abs(protocolPattern.Units.Count - (float)speechPattern.Units.Count)) /
+                protocolPattern.Units.Count*100f;//релевантность совпадения по количеству элементов
             var protoUnitsCount = protocolPattern.Units.Count;
             var commulative = 0f;
             if (protoUnitsCount >speechPattern.Units.Count)//ограничение количества итераций по количеству юнитов протокола
@@ -51,7 +53,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                 protoUnitsCount = speechPattern.Units.Count;
             }
 
-            Console.WriteLine($"Units processing:");
+            Console.WriteLine("Units processing:");
             Console.WriteLine($"CountRel: {countRel}");
             for (var i = 0; i < protoUnitsCount; i++)
             {
@@ -78,7 +80,8 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                         PrintRelevance($"SingleWord (VARIABLE): {compareResult}");
                         break;
                     default:
-                        PrintRelevance($"Unknown variable type: 0");
+                        compareResult = 0f;
+                        PrintRelevance($"Unknown protoUnit type: {protoUnit.Raw} -> 0 relevance");
                         break;
                 }
                 return compareResult;//exit
@@ -98,9 +101,21 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                     compareResult = AnyUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph);
                     PrintRelevance($"Any: {compareResult}");
                     break;
+                case "morph":
+                    compareResult = 0f;
+                    PrintRelevance($"morph is not supported yet: {compareResult}");
+                    break;
+                case "anymorph":
+                    compareResult = 0f;
+                    PrintRelevance($"Anymorph is not supported yet: {compareResult}");
+                    break;
                 case "anysimilar":
                     compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
                     PrintRelevance($"AnySimilar: {compareResult}");
+                    break;
+                default:
+                    compareResult = 0f;
+                    PrintRelevance($"Unknown protoUnit type: {protoUnit.Raw} -> 0 relevance");
                     break;
             }
             return compareResult;
@@ -114,18 +129,12 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         private static float SingleWordCompare(PSpeechPattern proto,SSpeechPattern speech,int i,int j)
         {
             var len = speech.Units[j].MorphInfo.Text.Length;
-            if (len <= 3)
+            return len switch
             {
-                return 1f;
-            }
-            else if (len<=6)
-            {
-                return 2f+((float)len-3f)/4f;
-            }
-            else
-            {
-                return 1f;
-            }
+                <= 3 => 1f,
+                <= 6 => 2f + (len - 3f) / 4f,
+                _ => 1f
+            };
         }
 
         private static float AnySimilarUnitsCompare(PSpeechPattern protocolPattern,SSpeechPattern speechPattern,int i,int j)
@@ -146,7 +155,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         private static float AnyUnitsCompare(MorphInfo speech, IEnumerable<MorphInfo> protos)
         {
             var table = protos.Select(proto => CommonUnitsCompare(speech, proto)).ToList();
-            return (float)table.Max();
+            return table.Max();
         }
         private static float CommonUnitsCompare(MorphInfo speech, MorphInfo proto,float priority = 0.8f)
         {
@@ -154,7 +163,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             var pt = CutBestTag(proto.BestTag).Split(',');
             var total = pt.Length;
             var positive = pt.Count(tag => st.Contains(tag));
-            var first = ((float)positive / (float)total)*100f;
+            var first = (positive / (float)total)*100f;
             var cuttedFirst = Currentword(proto.Text);
             var cuttedSecond = Currentword(speech.Text);
             var ifConverive = (cuttedFirst.Contains(cuttedSecond)) ||(cuttedSecond.Contains(cuttedFirst));
@@ -168,7 +177,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             var positive = st.Count(speechTag => pt.Any(protocolTag => speechTag == protocolTag));
             //var acc = pt.Where((t1, i) => st.Any(t => t1 == st[i])).Count();//causes crash at si
             //Console.WriteLine($"{speech.BestTag} {proto.BestTag} {acc} {pt.Length} {(double)acc /pt.Length*100d}");
-            return ((float)positive / (float)pt.Length) * 100f;
+            return (positive / (float)pt.Length) * 100f;
         }
         private static string Currentword(string currentword)
         {
@@ -176,7 +185,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             if (currentword.Length <= 7 & currentword.Length > 4) { curl = Convert.ToInt16(Math.Round(currentword.Length * 0.75, 0)); }
             else if (currentword.Length <= 4) { curl = Convert.ToInt16(Math.Round(currentword.Length * 0.85, 0)); }
             else { curl = Convert.ToInt16(Math.Round(currentword.Length * 0.67, 0)); }
-            return currentword.Substring(0, curl);
+            return currentword[..curl];
         }
         private static string CutBestTag(Tag tag)
         {

@@ -12,22 +12,18 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
         public Audist()
         {
             _storage.AmplitudeEma.Alpha = Configuration.AudistEmaAlpha;
-            OnFragment += Audist_onFragment;
+            OnLastFragment += AudistOnLastFragment;
         }
         private WaveInEvent _waveSource;
-
         public delegate void OnFragmentDelegate(int id);
-
         public delegate void OnAudioFileDelegate(string path);
-
-        public event OnFragmentDelegate OnFragment;
+        public event OnFragmentDelegate OnLastFragment;
         public event OnAudioFileDelegate OnAudioFile;
 
 
-        private AudioFragment _fragment = new AudioFragment();
-        private AudioStorage _storage = new AudioStorage();
-        private PreProcessor _preProcessor = new PreProcessor();
-        private AudioFileProcessor _audioFileProcessor = new AudioFileProcessor();
+        private AudioFragment _fragment = new();
+        private AudioStorage _storage = new ();
+        private PreProcessor _preProcessor = new ();
 
         private bool _previouslyIterated;
         private void WaveSource_DataAvailable(object sender, WaveInEventArgs e)
@@ -50,15 +46,15 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
                 if (_previouslyIterated)
                 {
                     _storage.Add(_fragment);
-                    OnFragment?.Invoke(_storage.Count()); //Подняв событие, мы получаем id первого блока, не проходящего treshold
+                    OnLastFragment?.Invoke(_storage.Count()); //Подняв событие, мы получаем id первого блока, не проходящего treshold
                     _previouslyIterated = false;
                 }
             }
 
-            _fragment.Clear();
+            _fragment = new AudioFragment();
             _fragment.AppendBytes(e.Buffer);
         }
-        private void Audist_onFragment(int id)
+        private void AudistOnLastFragment(int id)
         {
             //записываем номерок, считаем по postbytes, сколько нужно ещё записать фрагментов.
             var audio = _preProcessor.ProcessTreshold(_storage.GetSolidWr(id));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
@@ -32,36 +33,25 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
             //  Console.WriteLine($"  Command: {c}");  
             //}
             //Console.WriteLine("--------------------------------------------->>>");
-            var result = new List<Command>();
-            foreach (var command in commandsArr)
-            {
-                if (IsNoneOrEmpty(command))
-                    continue;   
-                
-                result.Add(ParseCommandUnit(command));
-            }
-            return result;
+            return (from command in commandsArr where !IsNoneOrEmpty(command) select ParseCommandUnit(command)).ToList();
         }
         private static Command ParseCommandUnit(string unit)
         {
-            if (String.IsNullOrEmpty(unit)) return null;
+            if (string.IsNullOrEmpty(unit)) return null;
             //сначала парсим аргументы, мб не заменяем переменные по ParseTripleUnit
             //Console.WriteLine(unit);
             var i = unit.IndexOf("(", StringComparison.Ordinal);
             var j = unit.LastIndexOf(")", StringComparison.Ordinal);
 
-            var name = unit.Substring(0, i);
-            //Console.WriteLine(name);
+            var name = unit[..i];
             var command = CommandsTable.GetConcreteCommand(name);
 
             var argumentsString = unit.Substring(i + 1, j - i - 1);
-            //Console.WriteLine(argumentsString);
             var arguments = argumentsString.Split("\",\"");
             for (var index = 0; index < arguments.Length; index++)
             {
                 arguments[index] = arguments[index].Trim('"');
             }
-
             command.Arguments = arguments;
             command.Name = name;
             return command;
@@ -90,8 +80,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
                 type = unit.Substring(j + 1, k - j);
                 text = unit.Substring(k + 2, m - k - 3);
             }
-           
-           
         }
         public static string GetProtocolBlock(string protocol, string qualifier, string ends)
         {
