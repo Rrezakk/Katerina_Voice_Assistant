@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Tables;
@@ -24,15 +23,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
         }
         public static List<Command> ParseCommands(string commands)
         {
-            //SayAny("Приветик","скучала по вам!","Здравствуйте, сэр");MakeSomething();
-            //Say("<var:name:in/out/auto>","arg2");
-            //Console.WriteLine("--------------------------------------------->>>");
             var commandsArr = commands.Split(";");
-            //foreach (var c in commandsArr)
-            //{
-            //  Console.WriteLine($"  Command: {c}");  
-            //}
-            //Console.WriteLine("--------------------------------------------->>>");
             return (from command in commandsArr where !IsNoneOrEmpty(command) select ParseCommandUnit(command)).ToList();
         }
         private static Command ParseCommandUnit(string unit)

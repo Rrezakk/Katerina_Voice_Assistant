@@ -16,7 +16,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete
         }
         public override void Start()
         {
-
+            //nothing but that's allright
         }
         private void OnIncomingRequest(ModuleRequest request)
         {

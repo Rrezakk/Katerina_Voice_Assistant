@@ -7,12 +7,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols
     public abstract class Protocol
     {
         public abstract string Name { get; set; }
-        public enum ProtocolTypes
-        {
-            Default,
-            Background,
-            
-        }
+        //public abstract ProtocolType Type { get; set; }
         public abstract void Construct(string protocol);
         public abstract PSpeechPattern GetPattern();
         public abstract List<Command> GetCommands();

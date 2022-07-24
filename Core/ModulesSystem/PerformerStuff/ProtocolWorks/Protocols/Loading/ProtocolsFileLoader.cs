@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
+namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols.Loading
 {
-    public class ProtocolsLoader
+    public class ProtocolsFileLoader: IProtocolsProvider
     {
-        public const string ProtocolsPath = "StandardProtocols\\";
-        public static string[] GetProtocols(string folder = ProtocolsPath)
+        public ProtocolsFileLoader(string protocolsPath)
+        {
+            ProtocolsPath = protocolsPath;
+        }
+        public string ProtocolsPath;
+        public string[] GetProtocols()
         {
             //Console.WriteLine("Loading protocols");
-            var protocols = GetProtocolsPaths(folder);
+            var protocols = GetProtocolsPaths(ProtocolsPath);
             //Console.WriteLine($"Protocol files found: {protocols.Length}");
             var lines = GetAllProtocolsLines(protocols);
             //Console.WriteLine($"Lines total: {lines.Length}");
@@ -53,21 +57,21 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             }
             return lines.ToArray();
         }
-        private static string[] GetProtocolsPaths(string folder)
+        private static IEnumerable<string> GetProtocolsPaths(string folder)
         {
             var files = Directory.GetFiles(folder, "*.txt");
             return files;
         }
-        private static List<string> SplitProtocols(string[] lines)
+        private static List<string> SplitProtocols(IReadOnlyList<string> lines)
         {
             //starts: Protocol:
             //ends: };
             var result = new List<string>();
             var offset = 0;
-            while (offset < lines.Length)
+            while (offset < lines.Count)
             {
                 var start = 0;
-                for (var i = offset; i < lines.Length; i++)//just one iteration
+                for (var i = offset; i < lines.Count; i++)//just one iteration
                 {
                     var line = lines[i];
                     if (line.Contains("Protocol:"))
@@ -97,5 +101,6 @@ namespace K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols
             }
             return result;
         }
+        
     }
 }

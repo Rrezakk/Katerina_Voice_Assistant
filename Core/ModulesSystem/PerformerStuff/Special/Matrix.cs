@@ -60,7 +60,8 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
                     }
                     else
                     {
-                        raw[i, j] = raw[j, i];
+                        if(j<rows && i<cols)
+                            raw[i, j] = raw[j, i];
                     }
                 }
             }
@@ -107,7 +108,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
             }
             return floats;
         });
-        public static readonly Func<int, float[]> ExponentialRegression = new Func<int, float[]>((count) =>
+        public static readonly Func<int, float[]> ExponentialRegression = new((count) =>
         {
             var floats = new float[count];
             for (var i = 0; i < count; i++)

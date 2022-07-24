@@ -7,16 +7,86 @@ using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special;
+using TensorFlow;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing
 {
     public static class RelevanceAnalyzer
     {
         private const double MinRelevance = 15f;
-        public static Protocol GetMaxRelevanceProtocol(string phrase, List<Protocol> protocols)
+
+        public static Protocol GetRelevantProtocol(SSpeechPattern speechPattern, List<Protocol> protocols)
         {
-            return GetMaxRelevanceProtocol(new SSpeechPattern(phrase), protocols);
+            foreach (var protocol in protocols)
+            {
+                var matrix = new List<List<MatrixElem>>();//матрица перестановок (сортировки)
+                Console.WriteLine($"P: {protocol.GetPattern()}");
+                var protocolPattern = protocol.GetPattern();
+                if (protocolPattern.Units.Count == 0 || speechPattern.Units.Count == 0)
+                    continue;
+                var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
+                var relevanceArray = new float[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
+                for (var i = 0; i < protocolPattern.Units.Count; i++)
+                {
+                    for (var j = 0; j < speechPattern.Units.Count; j++)
+                    {
+                        var relevanceElem = (float)Math.Round(SingleRelevance(protocolPattern, speechPattern, i, j), 2);
+                        relevanceArray[i, j] = relevanceElem;
+                    }
+                }//заполняем массив релевантностью пар
+                var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
+                //Console.WriteLine(mtrx);//визуализация релевантности
+                //Console.WriteLine(exponentialDiagonalicMatrix * 100);//визуализация сомножителя
+                mtrx *= exponentialDiagonalicMatrix;//умножение
+                Console.WriteLine(mtrx);//визуализация обработанной релевантности
+
+
+
+                for (var i = 0; i < mtrx.RowsCount; i++)
+                {
+                    var relTable = new List<MatrixElem>();//phrase parts to protocol part
+                    for (var j = 0; j < mtrx.ColumnsCount; j++)
+                    {
+                        relTable.Add(new MatrixElem(i, j, mtrx.Innerfloats[i, j]));
+                    }
+                    matrix.Add(relTable.OrderBy(d => -d.Value).ToList());
+                }//заполнение матрицы сортировки
+                foreach (var line in matrix)
+                {
+                    foreach (var elem in line)
+                    {
+                        Console.Write("{0,6:F1}", elem.Value);
+                    }
+                    Console.WriteLine();
+                }//вывод матрицы сортировки
+                var minRelevance = Math.Round(2.5f * Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix), 2);//минимальная релевантность
+                Console.WriteLine($"Min relevance: {minRelevance}");
+
+                var list = new List<int>(); //for indexes in lines to calculate %
+                var acc = 0f;
+                foreach (var relTable in matrix)
+                {
+                    foreach (var t in relTable.Where(t => !list.Contains(t.Col)))
+                    {
+                        if ((t.Value < minRelevance)) continue;
+                        
+                        if (!list.Contains(t.Col))
+                        {
+                            list.Add(t.Col);
+                            acc+=t.Value;
+                        }
+                        break;
+                    }
+                }
+
+                var metrica = (acc / list.Count) * (1f / (matrix[0].Count - list.Count + 1));
+                Console.WriteLine(string.Join(' ',list) +"  - " + metrica);
+            }
+
+            throw new NotImplementedException();
         }
+
         public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
         {
             var relTable = protocols.Select(protocol => MultipleRelevance(phrase, protocol.GetPattern())).ToList();
@@ -36,7 +106,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
             return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
         }
-
         private static float MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
         {
             if (protocolPattern.Units.Count==0)
@@ -136,7 +205,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                 _ => 1f
             };
         }
-
         private static float AnySimilarUnitsCompare(PSpeechPattern protocolPattern,SSpeechPattern speechPattern,int i,int j)
         {
             var u = new float[protocolPattern.Units[i].Morph.Count];
@@ -175,8 +243,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             var st = CutBestTag(speech.BestTag).Split(',');
             var pt = CutBestTag(proto.BestTag).Split(',');
             var positive = st.Count(speechTag => pt.Any(protocolTag => speechTag == protocolTag));
-            //var acc = pt.Where((t1, i) => st.Any(t => t1 == st[i])).Count();//causes crash at si
-            //Console.WriteLine($"{speech.BestTag} {proto.BestTag} {acc} {pt.Length} {(double)acc /pt.Length*100d}");
             return (positive / (float)pt.Length) * 100f;
         }
         private static string Currentword(string currentword)

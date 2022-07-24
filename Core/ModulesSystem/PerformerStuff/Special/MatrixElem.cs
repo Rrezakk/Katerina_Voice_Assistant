@@ -7,14 +7,14 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
     public class MatrixElem
     {
         public MatrixElem() { }
-        public MatrixElem(int line, int pos, float value)
+        public MatrixElem(int row, int col, float value)
         {
-            this.Line = line;
-            this.Pos = pos;
+            this.Row = row;
+            this.Col = col;
             this.Value = value;
         }
-        public int Line;
-        public int Pos;
+        public int Row;
+        public int Col;
         public float Value;
     }
 }

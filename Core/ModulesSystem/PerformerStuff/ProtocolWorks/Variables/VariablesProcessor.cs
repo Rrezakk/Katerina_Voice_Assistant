@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
@@ -56,9 +55,9 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             for (var i = 0; i < matrix.Count; i++)
             {
                 var lineElements = matrix[i]; //find max in line, excluding low relevant and already used
-                foreach (var t in lineElements.Where(t => !map.ContainsKey(t.Pos)))
+                foreach (var t in lineElements.Where(t => !map.ContainsKey(t.Col)))
                 {
-                    if (!(t.Value < minRelevance)) continue;
+                    if (/*!*/(t.Value < minRelevance)) continue;//so important!!!!!
                     if (!errorMap.ContainsKey(i))
                     {
                         errorMap.Add(i, "");
@@ -68,7 +67,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                     {
                         if (!map.ContainsKey(i))
                         {
-                            map.Add(i, t.Pos);
+                            map.Add(i, t.Col);
                         }
                         break;
                     }

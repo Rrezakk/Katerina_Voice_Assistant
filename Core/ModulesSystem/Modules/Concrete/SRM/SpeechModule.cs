@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
-using ModuleBuffer = K3NA_Remastered_2.ModulesSystem.Modules.Implementation.ModuleBuffer;
 using ModuleRequest = K3NA_Remastered_2.ModulesSystem.Modules.Implementation.ModuleRequest;
 
 namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
@@ -23,7 +21,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
                 try
                 {
                     _srm = new SpeechRecognizer();
-                    _srm.OnSpeechRecognized += SpeechRecognizedRecognizerOnSpeechRecognized;
+                    _srm.OnSpeechRecognized += SpeechRecognized;
                     Console.WriteLine($">{Name} initialized");
                 }
                 catch (Exception e)
@@ -40,7 +38,7 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM
         {
             Console.WriteLine($"New request from:{request.From} To:{request.To} ::: {request.Message}");
         }
-        private void SpeechRecognizedRecognizerOnSpeechRecognized(string speech)
+        private void SpeechRecognized(string speech)
         {
             SendRequest(speech);
         }

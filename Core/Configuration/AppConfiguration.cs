@@ -22,8 +22,14 @@ namespace K3NA_Remastered_2.Configuration
 
         private void LoadMultiple(string source = "/Configuration/")
         {
-            Console.WriteLine($"Dir: {Directory.Exists(Environment.CurrentDirectory + source)}");
-            var files = Directory.GetFiles(Environment.CurrentDirectory + source);
+            var path = Environment.CurrentDirectory + source;
+            var exists = Directory.Exists(path);
+            Console.WriteLine($"Dir: {exists}");
+            if (!exists)
+            {
+                Directory.CreateDirectory(path);
+            }
+            var files = Directory.GetFiles(path);
             foreach (var file in files)
             {
                 if (file.Contains(".env"))
