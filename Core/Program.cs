@@ -85,7 +85,8 @@ namespace K3NA_Remastered_2
         private static void Main()
         {
             ProtocolsStorage.LoadProtocols();
-            RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет моя милая"), ProtocolsStorage.Protocols);
+            var protocol = RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет моя милая"), ProtocolsStorage.Protocols);
+            Console.WriteLine($"THE MOST RELEVANT: {protocol.Name} -> {protocol.GetPattern()}");
             return;
 
             ProtocolsStorage.LoadProtocols();

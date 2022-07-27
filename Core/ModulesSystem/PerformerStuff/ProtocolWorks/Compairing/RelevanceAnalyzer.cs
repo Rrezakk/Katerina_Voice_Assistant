@@ -1,90 +1,103 @@
 ﻿//#define Print_Percentage//used for enabling console output for debugging
-
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DeepMorphy.Model;
 using K3NA_Remastered_2.Modules.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special;
-using TensorFlow;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing
 {
     public static class RelevanceAnalyzer
     {
         private const double MinRelevance = 15f;
+        public static Matrix GetRelevanceMatrix(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)
+        {
+            Console.WriteLine($"P: {protocolPattern}");
+            var relevanceArray = new float[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
+            for (var i = 0; i < protocolPattern.Units.Count; i++)
+            {
+                for (var j = 0; j < speechPattern.Units.Count; j++)
+                {
+                    var relevanceElem = SingleRelevance(protocolPattern, speechPattern, i, j);
+                    relevanceArray[i, j] = (float)Math.Round(relevanceElem, 2);
+                }
+            }//заполняем массив релевантностью пар
+            var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
+            //Console.WriteLine(mtrx);//визуализация релевантности
+            
+            Console.WriteLine(mtrx);//визуализация обработанной релевантности
+            return mtrx;
+        }
+        public static List<List<MatrixElem>> GetPermutationMatrix(Matrix matrix)
+        {
+            var permutationMatrix = new List<List<MatrixElem>>();//матрица перестановок (сортировки)
+            for (var i = 0; i < matrix.RowsCount; i++)
+            {
+                var relTable = new List<MatrixElem>();//phrase parts to protocol part
+                for (var j = 0; j < matrix.ColumnsCount; j++)
+                {
+                    relTable.Add(new MatrixElem(i, j, matrix.Innerfloats[i, j]));
+                }
+                permutationMatrix.Add(relTable.OrderBy(d => -d.Value).ToList());
+            }//заполнение матрицы сортировки
 
+            foreach (var line in permutationMatrix)
+            {
+                foreach (var elem in line)
+                {
+                    Console.Write("{0,6:F1}", elem.Value);
+                }
+                Console.WriteLine();
+            }//вывод матрицы сортировки
+
+            return permutationMatrix;
+        }
         public static Protocol GetRelevantProtocol(SSpeechPattern speechPattern, List<Protocol> protocols)
         {
-            foreach (var protocol in protocols)
+            var map = new Dictionary<float, Protocol>();
+            if (speechPattern.Units.Count == 0 ||protocols.Count==0) return new UnknownProtocolType();
+            foreach (var protocol in protocols.Where(p=>p.GetPattern().Units.Count!=0))
             {
-                var matrix = new List<List<MatrixElem>>();//матрица перестановок (сортировки)
-                Console.WriteLine($"P: {protocol.GetPattern()}");
-                var protocolPattern = protocol.GetPattern();
-                if (protocolPattern.Units.Count == 0 || speechPattern.Units.Count == 0)
-                    continue;
-                var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
-                var relevanceArray = new float[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
-                for (var i = 0; i < protocolPattern.Units.Count; i++)
-                {
-                    for (var j = 0; j < speechPattern.Units.Count; j++)
-                    {
-                        var relevanceElem = (float)Math.Round(SingleRelevance(protocolPattern, speechPattern, i, j), 2);
-                        relevanceArray[i, j] = relevanceElem;
-                    }
-                }//заполняем массив релевантностью пар
-                var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
-                //Console.WriteLine(mtrx);//визуализация релевантности
-                //Console.WriteLine(exponentialDiagonalicMatrix * 100);//визуализация сомножителя
-                mtrx *= exponentialDiagonalicMatrix;//умножение
-                Console.WriteLine(mtrx);//визуализация обработанной релевантности
+                var protoPattern = protocol.GetPattern();
+                var matrix = GetRelevanceMatrix(speechPattern, protoPattern);
+                var orderingMatrix = Matrix.CreateDiagonalic(Matrix.DefaultRegression/*Matrix.ExponentialRegression*/,
+                    protoPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
+                matrix *= orderingMatrix;//умножение
+                Console.WriteLine(orderingMatrix * 100);//визуализация сомножителя
 
-
-
-                for (var i = 0; i < mtrx.RowsCount; i++)
-                {
-                    var relTable = new List<MatrixElem>();//phrase parts to protocol part
-                    for (var j = 0; j < mtrx.ColumnsCount; j++)
-                    {
-                        relTable.Add(new MatrixElem(i, j, mtrx.Innerfloats[i, j]));
-                    }
-                    matrix.Add(relTable.OrderBy(d => -d.Value).ToList());
-                }//заполнение матрицы сортировки
-                foreach (var line in matrix)
-                {
-                    foreach (var elem in line)
-                    {
-                        Console.Write("{0,6:F1}", elem.Value);
-                    }
-                    Console.WriteLine();
-                }//вывод матрицы сортировки
-                var minRelevance = Math.Round(2.5f * Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix), 2);//минимальная релевантность
+                var minRelevance = Math.Round(2.5f * Matrix.GetMinForDegressiveDiagonalic(orderingMatrix), 2);//минимальная релевантность
                 Console.WriteLine($"Min relevance: {minRelevance}");
+
+                var permutationMatrix = GetPermutationMatrix(matrix);
 
                 var list = new List<int>(); //for indexes in lines to calculate %
                 var acc = 0f;
-                foreach (var relTable in matrix)
+                foreach (var relTable in permutationMatrix)
                 {
                     foreach (var t in relTable.Where(t => !list.Contains(t.Col)))
                     {
                         if ((t.Value < minRelevance)) continue;
-                        
-                        if (!list.Contains(t.Col))
-                        {
-                            list.Add(t.Col);
-                            acc+=t.Value;
-                        }
-                        break;
+                        list.Add(t.Col);
+                        acc+=t.Value;
                     }
                 }
+                var relative = (float)speechPattern.Units.Count / protoPattern.Units.Count;
 
-                var metrica = (acc / list.Count) * (1f / (matrix[0].Count - list.Count + 1));
-                Console.WriteLine(string.Join(' ',list) +"  - " + metrica);
+                var rel = relative * 20f + 0.8f * (acc/list.Count);
+
+                Console.WriteLine($"{acc:F} / {list.Count:F} = {acc/list.Count:F}");
+                Console.WriteLine($"{relative * 20f:F} + {0.8f * (acc / list.Count):F} = {rel:F}");
+                rel = MathF.Round(rel, 2);
+
+                var metrica = (acc / list.Count) * (1f / (permutationMatrix[0].Count - list.Count + 1));
+                Console.WriteLine(string.Join(' ', list) + "  - " + metrica + "   => " + rel);
+                map.Add(rel,protocol);
             }
-
-            throw new NotImplementedException();
+            return map[map.Keys.Max()];
         }
 
         public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
@@ -109,9 +122,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
         private static float MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
         {
             if (protocolPattern.Units.Count==0)
-            {
                 return 0f;
-            }
             var countRel = (protocolPattern.Units.Count -
                             Math.Abs(protocolPattern.Units.Count - (float)speechPattern.Units.Count)) /
                 protocolPattern.Units.Count*100f;//релевантность совпадения по количеству элементов
@@ -121,7 +132,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             {
                 protoUnitsCount = speechPattern.Units.Count;
             }
-
             Console.WriteLine("Units processing:");
             Console.WriteLine($"CountRel: {countRel}");
             for (var i = 0; i < protoUnitsCount; i++)
@@ -141,11 +151,11 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                 switch (protoUnit.TypeString)
                 {
                     case "anysimilar":
-                        compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
+                        compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j) *0.8f;
                         PrintRelevance($"AnySimilar (VARIABLE): {compareResult}"); /*for: {protoUnit.Raw} {speechUnit.Text}*/
                         break;
                     case "singleWord":
-                        compareResult = SingleWordCompare(protocolPattern, speechPattern, i,j);
+                        compareResult = SingleWordCompare(protocolPattern, speechPattern, i,j) *1f;
                         PrintRelevance($"SingleWord (VARIABLE): {compareResult}");
                         break;
                     default:
@@ -159,15 +169,15 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             switch (protoUnit.TypeString)
             {
                 case "common":
-                    compareResult = CommonUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First());
+                    compareResult = CommonUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First()) *1f;
                     PrintRelevance($"Common: {compareResult}");
                     break;
                 case "similar":
-                    compareResult = SimilarUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First());
+                    compareResult = SimilarUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph.First()) *0.9f;
                     PrintRelevance($"Similar: {compareResult}");
                     break;
                 case "any":
-                    compareResult = AnyUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph);
+                    compareResult = AnyUnitsCompare(speechUnit.MorphInfo, protoUnit.Morph) *1f;
                     PrintRelevance($"Any: {compareResult}");
                     break;
                 case "morph":
@@ -179,7 +189,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
                     PrintRelevance($"Anymorph is not supported yet: {compareResult}");
                     break;
                 case "anysimilar":
-                    compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j);
+                    compareResult = AnySimilarUnitsCompare(protocolPattern, speechPattern, i,j) *0.85f;
                     PrintRelevance($"AnySimilar: {compareResult}");
                     break;
                 default:
@@ -225,7 +235,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             var table = protos.Select(proto => CommonUnitsCompare(speech, proto)).ToList();
             return table.Max();
         }
-        private static float CommonUnitsCompare(MorphInfo speech, MorphInfo proto,float priority = 0.8f)
+        private static float CommonUnitsCompare(MorphInfo speech, MorphInfo proto,float priority = 0.7f)
         {
             var st = CutBestTag(speech.BestTag).Split(',');
             var pt = CutBestTag(proto.BestTag).Split(',');

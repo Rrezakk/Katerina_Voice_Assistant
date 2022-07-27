@@ -48,7 +48,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                 }
                 Console.WriteLine();
             }//вывод матрицы сортировки
-            var minRelevance = Math.Round(2.5f * Matrix.GetMinForExponentialDiagonalic(exponentialDiagonalicMatrix), 2);//минимальная релевантность
+            var minRelevance = Math.Round(2.5f * Matrix.GetMinForDegressiveDiagonalic(exponentialDiagonalicMatrix), 2);//минимальная релевантность
             Console.WriteLine($"Min relevance: {minRelevance}");
             var map = new Dictionary<int, int>();//pattern unit -> speech unit map
             var errorMap = new Dictionary<int, string>();//pattern unit -> empty string                                                  later will be       ####int[]

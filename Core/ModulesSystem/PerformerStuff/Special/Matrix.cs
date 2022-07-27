@@ -117,11 +117,11 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.Special
             }
             return floats;
         });
-        public static float GetMinForExponentialDiagonalic(Matrix m)
+        public static float GetMinForDegressiveDiagonalic(Matrix m)
         {
             return m.Innerfloats[0, m.ColumnsCount - 1];
         }
-        public static float GetMaxForExponentialDiagonalic(Matrix m)
+        public static float GetMaxForDegressiveDiagonalic(Matrix m)
         {
             return m.Innerfloats[0, 0];
         }
