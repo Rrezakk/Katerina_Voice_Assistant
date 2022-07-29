@@ -8,6 +8,7 @@ using K3NA_Remastered_2.ModulesSystem.Modules.Concrete;
 using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer;
 using K3NA_Remastered_2.ModulesSystem.Modules.Concrete.SRM;
 using K3NA_Remastered_2.ModulesSystem.Modules.Implementation;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairing;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Patterns;
 using K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Protocols;
@@ -84,6 +85,9 @@ namespace K3NA_Remastered_2
         //}
         private static void Main()
         {
+            ChachedSpeaker.Speak("Привет");
+            ChachedSpeaker.Speak("Как дела");
+            ChachedSpeaker.Speak("Моё имя Катрина");
             ProtocolsStorage.LoadProtocols();
             var protocol = RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет моя милая"), ProtocolsStorage.Protocols);
             Console.WriteLine($"THE MOST RELEVANT: {protocol.Name} -> {protocol.GetPattern()}");

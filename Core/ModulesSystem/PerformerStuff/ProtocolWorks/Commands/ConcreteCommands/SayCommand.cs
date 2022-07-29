@@ -1,4 +1,5 @@
 ﻿using System;
+using K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents;
 using K3NA_Remastered_2.Yandex_API;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands.ConcreteCommands
@@ -9,7 +10,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Commands.
         public override string[] Arguments { get; set; }
         public override void Execute()
         {
-            Tts.SpeakAsync(Arguments[0]);
+            ChachedSpeaker.Speak(Arguments[0]);
         }
     }
 }
