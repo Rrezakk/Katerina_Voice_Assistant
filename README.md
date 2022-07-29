@@ -27,6 +27,7 @@ FolderId=Your Yandex cloud folder id
 OauthToken=Your token Yandex cloud 
 OAuthTolenIamAPIKey=default
 ```
+get oauth : https://oauth.yandex.ru/authorize?response_type=token
 5. To get keys, google... now sorry, didn't explain
 
 6. **srmConfig.env**
