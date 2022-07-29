@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Media;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using K3NA_Remastered_2.Yandex_API;
@@ -40,13 +38,10 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents
 
             queueAndPlay(filePath);
         }
-        private static async void queueAndPlay(string waveFilePath)
+        private static void queueAndPlay(string waveFilePath)
         {
-            await Task.Run(() =>
-            {
-                speakQueue.Add(waveFilePath);
-                StartSoundPlay();
-            });
+            speakQueue.Add(waveFilePath);
+            StartSoundPlay();
         }
         private static void StartSoundPlay()
         {
