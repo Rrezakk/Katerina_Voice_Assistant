@@ -13,48 +13,24 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
     {
         public static List<Variable> ExtractVariables(PSpeechPattern protocolPattern, SSpeechPattern speechPattern)
         {
+            if (speechPattern.Units.Count == 0 || protocolPattern.Units.Count == 0) return new List<Variable>();
             var variables = new List<Variable>();
             Console.WriteLine("Extracting variables...");
-            var matrix = new List<List<MatrixElem>>();//матрица перестановок (сортировки)
-            var exponentialDiagonalicMatrix = Matrix.CreateDiagonalic(Matrix.ExponentialRegression, protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
-            var relevanceArray = new float[protocolPattern.Units.Count, speechPattern.Units.Count];//массив релевантности
-            for (var i = 0; i < protocolPattern.Units.Count; i++)
-            {
-                for (var j = 0; j < speechPattern.Units.Count; j++)
-                {
-                    var relevanceElem = (float)Math.Round(RelevanceAnalyzer.SingleRelevance(protocolPattern, speechPattern, i, j), 2);
-                    relevanceArray[i, j] = relevanceElem;
-                }
-            }//заполняем массив релевантностью пар
-            var mtrx = new Matrix(relevanceArray);//создаем объект матрицы для удобной работы
-            Console.WriteLine(mtrx);//визуализация релевантности
-            Console.WriteLine(exponentialDiagonalicMatrix * 100);//визуализация сомножителя
-            mtrx *= exponentialDiagonalicMatrix;//умножение
-            Console.WriteLine(mtrx);//визуализация обработанной релевантности
-            for (var i = 0; i < mtrx.RowsCount; i++)
-            {
-                var relTable = new List<MatrixElem>();
-                for (var j = 0; j < mtrx.ColumnsCount; j++)
-                {
-                    relTable.Add(new MatrixElem(i, j, mtrx.Innerfloats[i, j]));
-                }
-                matrix.Add(relTable.OrderBy(d => -d.Value).ToList());
-            }//заполнение матрицы сортировки
-            foreach (var line in matrix)
-            {
-                foreach (var elem in line)
-                {
-                    Console.Write("{0,6:F1}", elem.Value);
-                }
-                Console.WriteLine();
-            }//вывод матрицы сортировки
-            var minRelevance = Math.Round(2.5f * Matrix.GetMinForDegressiveDiagonalic(exponentialDiagonalicMatrix), 2);//минимальная релевантность
+
+
+            var matrix = RelevanceAnalyzer.GetRelevanceMatrix(speechPattern, protocolPattern);
+            var orderingMatrix = Matrix.CreateDiagonalic(Matrix.DefaultRegression/*Matrix.ExponentialRegression*/,
+                protocolPattern.Units.Count, speechPattern.Units.Count);//матрица - сомножитель
+            matrix *= orderingMatrix;
+            var permutationMatrix = RelevanceAnalyzer.GetPermutationMatrix(matrix);
+
+            var minRelevance = Math.Round(2.5f * Matrix.GetMinForDegressiveDiagonalic(orderingMatrix), 2);//минимальная релевантность
             Console.WriteLine($"Min relevance: {minRelevance}");
             var map = new Dictionary<int, int>();//pattern unit -> speech unit map
             var errorMap = new Dictionary<int, string>();//pattern unit -> empty string                                                  later will be       ####int[]
-            for (var i = 0; i < matrix.Count; i++)
+            for (var i = 0; i < permutationMatrix.Count; i++)
             {
-                var lineElements = matrix[i]; //find max in line, excluding low relevant and already used
+                var lineElements = permutationMatrix[i]; //find max in line, excluding low relevant and already used
                 foreach (var t in lineElements.Where(t => !map.ContainsKey(t.Col)))
                 {
                     if (/*!*/(t.Value < minRelevance)) continue;//so important!!!!!
@@ -77,6 +53,8 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             {
                 Console.WriteLine($"{key} -> {value}");
             }
+
+
             foreach (var (key, value) in map)
             {
                 Console.WriteLine($"{protocolPattern.Units[key]} -> \"{speechPattern.Units[value]}\"");
@@ -94,7 +72,6 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
                     variables.Add(new Variable(protocolPattern.Units[key].VariableName, value));
                 }
             }
-
             return variables;
         }
         public static void FillArguments(VariableStorage storage,ref List<Command> commands)

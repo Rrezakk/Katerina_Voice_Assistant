@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Media;
 using System.Threading;
-using System.Threading.Tasks;
 using K3NA_Remastered_2.Yandex_API;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents
