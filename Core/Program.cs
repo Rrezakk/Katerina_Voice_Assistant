@@ -23,74 +23,19 @@ namespace K3NA_Remastered_2
         public static readonly ProtocolsStorage ProtocolsStorage = new();//must be loaded
         public static readonly VariableStorage  GlobalVariables = new();//global variables storage
         private static readonly ModulesContainer Modules = new(/*new InnerDoubles<IModule>() { new SpeechModule(), new TestModule() }*/);
-        //private static void Test()
-        //{
-        //    var phrases = new List<string>() { "Алёнка и другие и я",/*,"найди кокос","привет тебе пупсик"*//*,"привет обыватель","найди","привет тебе цветок"*/};
-        //    foreach (var phrase in phrases)
-        //    {
-        //        OnSpeech(phrase);
-        //    }
-        //}
-        //private static void OnSpeech(string speech)
-        //{
-        //    var speechPattern = new SSpeechPattern(speech);
-        //    var protocol = RelevanceAnalyzer.GetMaxRelevanceProtocol(speechPattern, ProtocolsStorage.Protocols);
-        //    var protocolPattern = protocol.GetPattern();
-        //    Console.WriteLine($"Protocol: {protocol.Name}");
-        //    Console.WriteLine($"Pattern: {protocolPattern}");
-        //    Console.WriteLine($"Speech: {speechPattern}");
-        //    var storage = new VariableStorage(VariablesProcessor.ExtractVariables(protocolPattern, speechPattern));
-        //    Console.WriteLine(storage);
-        //    var commands = protocol.GetCommands();
-        //    VariablesProcessor.FillArguments(storage,ref commands);
-
-        //    //storage.ExecuteRecognizedProtocol(proto, speechPattern);//конечная точка в обработке
-        //}
-        //private static void DebugProtocols()
-        //{
-        //    foreach (var protocol in ProtocolsStorage.Protocols)
-        //    {
-        //        Console.WriteLine($"Loaded protocol: {protocol.Name}");
-        //        Console.WriteLine("Commands: ");
-        //        foreach (var c in protocol.GetCommands())
-        //        {
-        //            Console.WriteLine($"    Command: {c.Name}");
-        //            var args = c.Arguments.Concat();
-        //            if(args!="")
-        //                Console.WriteLine($"        Arguments: {args}");
-        //        }
-        //        Console.WriteLine("Pattern: ");
-        //        foreach (var unit in protocol.GetPattern().Units/*.Where(unit => unit.Morph != null)*/)
-        //        {
-        //            if (unit.IsVariable)
-        //            {
-        //                Console.WriteLine($"    Variable: {unit.VariableName} : {unit.TypeString}");
-        //                if(unit.Morph==null)continue;
-        //                foreach (var morph in unit.Morph)
-        //                {
-        //                    Console.WriteLine($"        {morph?.Text} - {morph?.BestTag}");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (unit.Morph == null) continue;
-        //                Console.WriteLine($"    Word [{unit.TypeString}]: ");
-        //                foreach (var morph in unit.Morph)
-        //                {
-        //                    Console.WriteLine($"        {morph?.Text} - {morph?.BestTag}");
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+        
         private static void Main()
         {
-            ChachedSpeaker.Speak("Привет");
-            ChachedSpeaker.Speak("Как дела");
-            ChachedSpeaker.Speak("Моё имя Катрина");
+            //ChachedSpeaker.ClearChache();
+            
             ProtocolsStorage.LoadProtocols();
-            var protocol = RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет моя милая"), ProtocolsStorage.Protocols);
+            ChachedSpeaker.Speak("Голосовая система загружена");
+            var protocol = RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет Кирилл"), ProtocolsStorage.Protocols);
             Console.WriteLine($"THE MOST RELEVANT: {protocol.Name} -> {protocol.GetPattern()}");
+            ChachedSpeaker.Speak("Найден релевантный протокол");
+            
+
+            Console.ReadLine();
             return;
 
             ProtocolsStorage.LoadProtocols();

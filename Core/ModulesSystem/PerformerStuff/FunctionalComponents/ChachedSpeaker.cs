@@ -1,15 +1,24 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Media;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using K3NA_Remastered_2.Yandex_API;
 
 namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents
 {
     internal class ChachedSpeaker//to decrease tts api requests
     {
-        private static readonly SoundPlayer player = new();
+        private static Thread soundPlayThread;
+        private static readonly BlockingCollection<string> speakQueue = new();
+        private static readonly CancellationTokenSource cancelSoundPlay;
+        static ChachedSpeaker()
+        {
+            cancelSoundPlay = new CancellationTokenSource();
+        }
         public static void Speak(string text)
         {
             var chacheDirectory = Environment.CurrentDirectory + Tts.AudioFilesChachePath;
@@ -19,7 +28,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents
             }
 
 
-            var hash = ComputeSha256Hash(text);
+            var hash = Hashing.ComputeSha256Hash(text);
             var fileName = hash + ".wav";
             var filePath = chacheDirectory + fileName;
 
@@ -29,19 +38,42 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.FunctionalComponents
                 Tts.SynthPhraseAndSaveAudioFile(text, filePath);
             }
 
-            player.SoundLocation = filePath;
-            player.PlaySync();
+            queueAndPlay(filePath);
         }
-        private static string ComputeSha256Hash(string rawData)
+        private static async void queueAndPlay(string waveFilePath)
         {
-            using var sha256Hash = SHA256.Create();
-            var bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-            var builder = new StringBuilder();
-            foreach (var t in bytes)
+            await Task.Run(() =>
             {
-                builder.Append(t.ToString("x2"));
+                speakQueue.Add(waveFilePath);
+                StartSoundPlay();
+            });
+        }
+        private static void StartSoundPlay()
+        {
+            //Sound Player Loop Thread
+            if (soundPlayThread is {IsAlive: true}) return;
+            soundPlayThread = new Thread(SoundPlayerLoop)
+            {
+                Name = "SoundPlayerLoop",
+                IsBackground = true
+            };
+            soundPlayThread.Start();
+        }
+        private static void SoundPlayerLoop()//Method that the outside thread will use outside the thread of this class
+        {
+            var sound = new SoundPlayer();
+            foreach (var soundToPlay in speakQueue.GetConsumingEnumerable(cancelSoundPlay.Token))
+            {
+                sound.SoundLocation = soundToPlay;
+                //Here the outside thread waits for the following play to end before continuing.
+                sound.PlaySync();
             }
-            return builder.ToString();
+        }
+        public static void ClearChache()
+        {
+            var chacheDirectory = Environment.CurrentDirectory + Tts.AudioFilesChachePath;
+            if (Directory.Exists(chacheDirectory))
+                Directory.Delete(chacheDirectory,true);
         }
     }
 }
