@@ -13,7 +13,7 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
 {
     public static class RelevanceAnalyzer
     {
-        private const double MinRelevance = 15f;
+        //private const double MinRelevance = 15f;
         public static Matrix GetRelevanceMatrix(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)
         {
             Console.WriteLine($"P: {protocolPattern}");
@@ -99,46 +99,46 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Compairin
             }
             return map[map.Keys.Max()];
         }
-        public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
-        {
-            var relTable = protocols.Select(protocol => MultipleRelevance(phrase, protocol.GetPattern())).ToList();
-            var outstr = "";
-            var max = 0f;
-            foreach (var line in relTable)
-            {
-                if (line>max)
-                {
-                    max = line;
-                }
-                outstr += $"[{line:F1}],";
-            }
-            outstr = outstr.TrimEnd(',');
-            var index = relTable.IndexOf(max);
-            Console.WriteLine($"Relevance Table: {outstr}");
-            Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
-            return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
-        }
-        private static float MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
-        {
-            if (protocolPattern.Units.Count==0)
-                return 0f;
-            var countRel = (protocolPattern.Units.Count -
-                            Math.Abs(protocolPattern.Units.Count - (float)speechPattern.Units.Count)) /
-                protocolPattern.Units.Count*100f;//релевантность совпадения по количеству элементов
-            var protoUnitsCount = protocolPattern.Units.Count;
-            var commulative = 0f;
-            if (protoUnitsCount >speechPattern.Units.Count)//ограничение количества итераций по количеству юнитов протокола
-            {
-                protoUnitsCount = speechPattern.Units.Count;
-            }
-            Console.WriteLine("Units processing:");
-            Console.WriteLine($"CountRel: {countRel}");
-            for (var i = 0; i < protoUnitsCount; i++)
-            {
-                commulative += SingleRelevance(protocolPattern,speechPattern,i,i);
-            }
-            return (commulative + countRel) / (protocolPattern.Units.Count+1f)/*processedUnits*/;
-        }
+        //public static Protocol GetMaxRelevanceProtocol(SSpeechPattern phrase,List<Protocol> protocols)
+        //{
+        //    var relTable = protocols.Select(protocol => MultipleRelevance(phrase, protocol.GetPattern())).ToList();
+        //    var outstr = "";
+        //    var max = 0f;
+        //    foreach (var line in relTable)
+        //    {
+        //        if (line>max)
+        //        {
+        //            max = line;
+        //        }
+        //        outstr += $"[{line:F1}],";
+        //    }
+        //    outstr = outstr.TrimEnd(',');
+        //    var index = relTable.IndexOf(max);
+        //    Console.WriteLine($"Relevance Table: {outstr}");
+        //    Console.WriteLine($"Max: {max} on {index} : {protocols[index].Name}");
+        //    return max< MinRelevance ? new UnknownProtocolType() : protocols[index];//узнать потом по имени протокола, нашелся ли подходящий
+        //}
+        //private static float MultipleRelevance(SSpeechPattern speechPattern, PSpeechPattern protocolPattern)//по сути мы перебираем все протоколы в цикле, нам легко получить протокол затем по индексу в таблице
+        //{
+        //    if (protocolPattern.Units.Count==0)
+        //        return 0f;
+        //    var countRel = (protocolPattern.Units.Count -
+        //                    Math.Abs(protocolPattern.Units.Count - (float)speechPattern.Units.Count)) /
+        //        protocolPattern.Units.Count*100f;//релевантность совпадения по количеству элементов
+        //    var protoUnitsCount = protocolPattern.Units.Count;
+        //    var commulative = 0f;
+        //    if (protoUnitsCount >speechPattern.Units.Count)//ограничение количества итераций по количеству юнитов протокола
+        //    {
+        //        protoUnitsCount = speechPattern.Units.Count;
+        //    }
+        //    Console.WriteLine("Units processing:");
+        //    Console.WriteLine($"CountRel: {countRel}");
+        //    for (var i = 0; i < protoUnitsCount; i++)
+        //    {
+        //        commulative += SingleRelevance(protocolPattern,speechPattern,i,i);
+        //    }
+        //    return (commulative + countRel) / (protocolPattern.Units.Count+1f)/*processedUnits*/;
+        //}
         public static float SingleRelevance(PSpeechPattern protocolPattern, SSpeechPattern speechPattern, int i,int j)
         {
             var compareResult = 0f;//result

@@ -40,7 +40,8 @@ namespace K3NA_Remastered_2.ModulesSystem.Modules.Concrete.Performer
         {
             if (string.IsNullOrEmpty(speech)) return;
             var recognizedSpeechPattern = new SSpeechPattern(speech);
-            var protocol = RelevanceAnalyzer.GetMaxRelevanceProtocol(recognizedSpeechPattern, Core.ProtocolsStorage.Protocols);
+            //var protocol = RelevanceAnalyzer.GetMaxRelevanceProtocol(recognizedSpeechPattern, Core.ProtocolsStorage.Protocols);
+            var protocol = RelevanceAnalyzer.GetRelevantProtocol(recognizedSpeechPattern, Core.ProtocolsStorage.Protocols);
             var protocolPattern = protocol.GetPattern();
             Console.WriteLine($"Protocol: {protocol.Name}");
             Console.WriteLine($"Pattern: {protocolPattern}");

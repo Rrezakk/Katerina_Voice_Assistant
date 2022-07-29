@@ -28,23 +28,23 @@ namespace K3NA_Remastered_2
         {
             //ChachedSpeaker.ClearChache();
             
-            ProtocolsStorage.LoadProtocols();
-            ChachedSpeaker.Speak("Голосовая система загружена");
-            var protocol = RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет Кирилл"), ProtocolsStorage.Protocols);
-            Console.WriteLine($"THE MOST RELEVANT: {protocol.Name} -> {protocol.GetPattern()}");
-            ChachedSpeaker.Speak("Найден релевантный протокол");
+            //ProtocolsStorage.LoadProtocols();
+            //ChachedSpeaker.Speak("Голосовая система загружена");
+            //var protocol = RelevanceAnalyzer.GetRelevantProtocol(new SSpeechPattern("привет Кирилл"), ProtocolsStorage.Protocols);
+            //Console.WriteLine($"THE MOST RELEVANT: {protocol.Name} -> {protocol.GetPattern()}");
+            //ChachedSpeaker.Speak("Найден релевантный протокол");
             
 
-            Console.ReadLine();
-            return;
+            //Console.ReadLine();
+            //return;
 
             ProtocolsStorage.LoadProtocols();
-            Modules.Load(new List<Module>() {new SpeechModule(),new TestModule(),new Performer()});
+            Modules.Load(new List<Module>() {/*new SpeechModule(),*/new TestModule(),new Performer()});
             Modules.Start();
             MBus.Start();
-            //MBus.MakeRequest(new ModuleRequest("SRM","Performer","привет мир"));
+            MBus.MakeRequest(new ModuleRequest("SRM","Performer","привет мир"));
             //MBus.MakeRequest(new ModuleRequest("Core","SRM","тестовое сообщение к SRM"));
-            MBus.MakeSpecialRequest("Performer SRM", MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
+            //MBus.MakeSpecialRequest("Performer SRM", MBus.SpecialRequestType.Subscribe);//subscribe test module to SRM messages
             //MBus.MakeSpecialRequest("test SRM", MBus.SpecialRequestType.Override);//subscribe test module to SRM messages for a once,then nobody will get this message except test-module
             Console.ReadKey();
         }

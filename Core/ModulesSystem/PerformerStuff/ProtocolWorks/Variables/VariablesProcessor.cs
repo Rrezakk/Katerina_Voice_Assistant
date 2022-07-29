@@ -28,27 +28,33 @@ namespace K3NA_Remastered_2.ModulesSystem.PerformerStuff.ProtocolWorks.Variables
             Console.WriteLine($"Min relevance: {minRelevance}");
             var map = new Dictionary<int, int>();//pattern unit -> speech unit map
             var errorMap = new Dictionary<int, string>();//pattern unit -> empty string                                                  later will be       ####int[]
-            for (var i = 0; i < permutationMatrix.Count; i++)
-            {
-                var lineElements = permutationMatrix[i]; //find max in line, excluding low relevant and already used
-                foreach (var t in lineElements.Where(t => !map.ContainsKey(t.Col)))
-                {
-                    if (/*!*/(t.Value < minRelevance)) continue;//so important!!!!!
-                    if (!errorMap.ContainsKey(i))
-                    {
-                        errorMap.Add(i, "");
+            //for (var i = 0; i < permutationMatrix.Count; i++)
+            //{
+            //    var lineElements = permutationMatrix[i]; //find max in line, excluding low relevant and already used
 
-                    }
-                    else 
-                    {
-                        if (!map.ContainsKey(i))
-                        {
-                            map.Add(i, t.Col);
-                        }
-                        break;
-                    }
-                }
-            }//mapping
+            //    for (var j = 0; j < lineElements.Count; j++)
+            //    {
+            //        if (lineElements[j].Value < minRelevance) continue;
+
+
+
+            //        if (!map.ContainsKey(i))
+            //        {
+            //            map.Add(i, lineElements[j].Col);
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            if (!errorMap.ContainsKey(i))
+            //            {
+            //                errorMap.Add(i, "");
+            //            }
+            //        }
+            //    }
+            //}//mapping
+
+            //Don't work -> needs to be refactored
+
             foreach (var (key, value) in map)
             {
                 Console.WriteLine($"{key} -> {value}");
